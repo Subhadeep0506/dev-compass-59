@@ -6,14 +6,14 @@ import { cn } from '@/lib/utils';
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
-  onOpenConfig: () => void;
+  onOpenChatSettings: () => void;
   isLoading?: boolean;
   placeholder?: string;
 }
 
 export const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,
-  onOpenConfig,
+  onOpenChatSettings,
   isLoading = false,
   placeholder = "Type your message here..."
 }) => {
@@ -57,8 +57,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
               type="button"
               variant="ghost"
               size="sm"
-              onClick={onOpenConfig}
+              onClick={onOpenChatSettings}
               className="hover:bg-muted flex-shrink-0"
+              title="Chat Settings"
             >
               <Settings className="w-4 h-4" />
             </Button>

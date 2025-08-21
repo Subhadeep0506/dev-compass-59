@@ -192,7 +192,7 @@ const Index = () => {
           >
             <Menu className="w-5 h-5" />
           </Button>
-          <h1 className="font-semibold">GodotChat</h1>
+          <h1 className="font-semibold">ChatBot UI</h1>
           <div className="w-8" /> {/* Spacer */}
         </div>
 

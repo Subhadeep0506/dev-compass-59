@@ -18,6 +18,8 @@ import { Badge } from '@/components/ui/badge';
 interface SettingsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  title?: string;
+  description?: string;
 }
 
 interface Settings {
@@ -31,6 +33,8 @@ interface Settings {
 export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   open,
   onOpenChange,
+  title = "Settings",
+  description = "Manage your preferences and settings."
 }) => {
   const [settings, setSettings] = useState<Settings>({
     model: 'gpt-4',
@@ -60,9 +64,9 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] p-0">
         <DialogHeader className="p-6 pb-4">
-          <DialogTitle>Chat Configuration</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
-            Customize your chatbot settings and external source preferences.
+            {description}
           </DialogDescription>
         </DialogHeader>
 

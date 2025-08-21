@@ -15,6 +15,8 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { UserProfilePopover } from '@/components/UserProfilePopover';
+import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
 interface ChatHistory {
@@ -49,6 +51,9 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
   activeChatId,
   onSelectChat,
 }) => {
+  const { user, profile } = useAuth();
+  
+  const displayName = profile?.full_name || profile?.username || user?.email?.split('@')[0] || 'User';
   return (
     <div className={cn(
       "bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300",
@@ -172,20 +177,22 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
             )}
           >
             <Settings className="w-4 h-4" />
-            {!isCollapsed && <span className="ml-2">Settings</span>}
+            {!isCollapsed && <span className="ml-2">User Settings</span>}
           </Button>
           
-          <Button
-            variant="ghost"
-            size={isCollapsed ? "sm" : "default"}
-            className={cn(
-              "hover:bg-sidebar-item-hover",
-              isCollapsed ? "w-8 h-8 p-0" : "w-full justify-start"
-            )}
-          >
-            <User className="w-4 h-4" />
-            {!isCollapsed && <span className="ml-2">Profile</span>}
-          </Button>
+          <UserProfilePopover>
+            <Button
+              variant="ghost"
+              size={isCollapsed ? "sm" : "default"}
+              className={cn(
+                "hover:bg-sidebar-item-hover",
+                isCollapsed ? "w-8 h-8 p-0" : "w-full justify-start"
+              )}
+            >
+              <User className="w-4 h-4" />
+              {!isCollapsed && <span className="ml-2 truncate">{displayName}</span>}
+            </Button>
+          </UserProfilePopover>
         </div>
       </div>
     </div>
