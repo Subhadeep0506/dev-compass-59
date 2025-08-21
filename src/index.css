@@ -2,41 +2,70 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Modern Chatbot UI Design System - All colors MUST be HSL */
 
 @layer base {
   :root {
+    /* Base Colors */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 220 14% 8%;
 
+    /* Chat UI Colors */
+    --chat-bg: 0 0% 98%;
+    --chat-header: 0 0% 100%;
+    --chat-input: 0 0% 100%;
+    --chat-bubble-user: 266 85% 58%;
+    --chat-bubble-user-foreground: 0 0% 100%;
+    --chat-bubble-bot: 0 0% 100%;
+    --chat-bubble-bot-foreground: 220 14% 8%;
+    
+    /* Sidebar Colors */
+    --sidebar-bg: 0 0% 100%;
+    --sidebar-item-hover: 0 0% 96%;
+    --sidebar-item-active: 266 85% 95%;
+    --sidebar-border: 220 13% 91%;
+
+    /* Component Colors */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
+    --card-foreground: 220 14% 8%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 220 14% 8%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary Brand */
+    --primary: 266 85% 58%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 266 100% 70%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary */
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 220 14% 8%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted & Accent */
+    --muted: 0 0% 96%;
+    --muted-foreground: 220 8% 46%;
+    --accent: 266 85% 95%;
+    --accent-foreground: 266 85% 20%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Status Colors */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Interactive Elements */
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 266 85% 58%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
+    /* Design Tokens */
     --radius: 0.5rem;
+    --gradient-primary: linear-gradient(135deg, hsl(266 85% 58%), hsl(266 100% 70%));
+    --gradient-sidebar: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 98%));
+    --shadow-elegant: 0 10px 30px -10px hsl(266 85% 58% / 0.1);
+    --shadow-chat: 0 2px 8px hsl(220 14% 8% / 0.08);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 98%;
 
@@ -56,33 +85,64 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    /* Base Colors */
+    --background: 224 71% 4%;
     --foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    /* Chat UI Colors */
+    --chat-bg: 224 71% 4%;
+    --chat-header: 222 84% 5%;
+    --chat-input: 222 84% 5%;
+    --chat-bubble-user: 266 85% 58%;
+    --chat-bubble-user-foreground: 0 0% 100%;
+    --chat-bubble-bot: 222 84% 5%;
+    --chat-bubble-bot-foreground: 210 40% 98%;
+    
+    /* Sidebar Colors */
+    --sidebar-bg: 222 84% 5%;
+    --sidebar-item-hover: 215 28% 17%;
+    --sidebar-item-active: 266 85% 15%;
+    --sidebar-border: 215 28% 17%;
 
-    --popover: 222.2 84% 4.9%;
+    /* Component Colors */
+    --card: 222 84% 5%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 84% 5%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    /* Primary Brand */
+    --primary: 266 85% 58%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 266 100% 70%;
 
-    --secondary: 217.2 32.6% 17.5%;
+    /* Secondary */
+    --secondary: 215 28% 17%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    /* Muted & Accent */
+    --muted: 215 28% 17%;
+    --muted-foreground: 217 10% 65%;
+    --accent: 266 85% 15%;
+    --accent-foreground: 266 85% 80%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
+    /* Status Colors */
+    --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    /* Interactive Elements */
+    --border: 215 28% 17%;
+    --input: 215 28% 17%;
+    --ring: 266 85% 58%;
+
+    /* Design Tokens */
+    --gradient-primary: linear-gradient(135deg, hsl(266 85% 58%), hsl(266 100% 70%));
+    --gradient-sidebar: linear-gradient(180deg, hsl(222 84% 5%), hsl(224 71% 4%));
+    --shadow-elegant: 0 10px 30px -10px hsl(266 85% 58% / 0.2);
+    --shadow-chat: 0 2px 8px hsl(0 0% 0% / 0.3);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -100,6 +160,71 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Custom Scrollbars */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/20;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/40;
+  }
+
+  /* Code Block Styling */
+  .code-block {
+    @apply rounded-lg overflow-hidden;
+  }
+
+  .code-block pre {
+    @apply m-0 p-4 overflow-x-auto text-sm;
+    background: hsl(var(--muted)) !important;
+  }
+
+  .dark .code-block pre {
+    background: hsl(var(--border)) !important;
+  }
+
+  /* Message Content Styling */
+  .message-content {
+    @apply prose prose-sm max-w-none dark:prose-invert;
+  }
+
+  .message-content p {
+    @apply mb-3 last:mb-0 leading-relaxed;
+  }
+
+  .message-content ul, .message-content ol {
+    @apply mb-3 pl-4;
+  }
+
+  .message-content li {
+    @apply mb-1;
+  }
+
+  .message-content code:not(pre code) {
+    @apply bg-muted px-1.5 py-0.5 rounded text-sm font-mono;
+  }
+
+  .message-content blockquote {
+    @apply border-l-4 border-primary pl-4 italic;
   }
 }
