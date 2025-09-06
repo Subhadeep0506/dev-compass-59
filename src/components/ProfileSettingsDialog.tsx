@@ -111,7 +111,7 @@ export const ProfileSettingsDialog = ({ open, onOpenChange }: ProfileSettingsDia
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <User className="w-5 h-5" />
@@ -119,9 +119,14 @@ export const ProfileSettingsDialog = ({ open, onOpenChange }: ProfileSettingsDia
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
-          {/* Profile Information */}
+        <div className="grid grid-cols-2 gap-6">
+          {/* Left Column - Profile Information */}
           <div className="space-y-4">
+            <h3 className="font-medium flex items-center gap-2">
+              <User className="w-4 h-4" />
+              Profile Information
+            </h3>
+            
             <div className="space-y-2">
               <Label htmlFor="email" className="flex items-center gap-2">
                 <Mail className="w-4 h-4" />
@@ -138,10 +143,7 @@ export const ProfileSettingsDialog = ({ open, onOpenChange }: ProfileSettingsDia
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="username" className="flex items-center gap-2">
-                <User className="w-4 h-4" />
-                Username
-              </Label>
+              <Label htmlFor="username">Username</Label>
               <Input
                 id="username"
                 value={formData.username}
@@ -175,14 +177,12 @@ export const ProfileSettingsDialog = ({ open, onOpenChange }: ProfileSettingsDia
             </div>
           </div>
 
-          <Separator />
-
-          {/* Password Change */}
+          {/* Right Column - Password Change */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
+            <h3 className="font-medium flex items-center gap-2">
               <Key className="w-4 h-4" />
-              <h3 className="font-medium">Change Password</h3>
-            </div>
+              Change Password
+            </h3>
 
             <div className="space-y-2">
               <Label htmlFor="newPassword">New Password</Label>
@@ -207,6 +207,7 @@ export const ProfileSettingsDialog = ({ open, onOpenChange }: ProfileSettingsDia
               />
             </div>
           </div>
+        </div>
 
           <div className="flex justify-end gap-2 pt-4">
             <Button
@@ -234,8 +235,7 @@ export const ProfileSettingsDialog = ({ open, onOpenChange }: ProfileSettingsDia
               )}
             </Button>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-};
+        </DialogContent>
+      </Dialog>
+    );
+  };

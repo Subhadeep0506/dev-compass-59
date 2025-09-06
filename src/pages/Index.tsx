@@ -1,258 +1,172 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ChatSidebar } from '@/components/ChatSidebar';
 import { ChatMessage } from '@/components/ChatMessage';
 import { ChatInput } from '@/components/ChatInput';
-import { SettingsDialog } from '@/components/SettingsDialog';
-import { ExternalSourceDialog } from '@/components/ExternalSourceDialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { UserProfilePopover } from '@/components/UserProfilePopover';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Menu } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Trash2 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 
 interface Message {
   id: string;
   content: string;
-  sender: 'user' | 'bot';
+  isUser: boolean;
   timestamp: Date;
-  sources?: string[];
-}
-
-interface ChatHistory {
-  id: string;
-  title: string;
-  createdAt: Date;
-  updatedAt: Date;
-  tags: string[];
-  hasExternalSources: boolean;
 }
 
 const Index = () => {
+  const { user, profile } = useAuth();
+  const { toast } = useToast();
+  const [messages, setMessages] = useState([
+    {
+      id: '1',
+      content: 'Hello! How can I help you today?',
+      isUser: false,
+      timestamp: new Date(),
+    },
+  ]);
+
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isDark, setIsDark] = useState(false);
-  const [userSettingsOpen, setUserSettingsOpen] = useState(false);
-  const [chatSettingsOpen, setChatSettingsOpen] = useState(false);
-  const [externalSourceOpen, setExternalSourceOpen] = useState(false);
-  const [currentQuery, setCurrentQuery] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      content: 'Hello! I\'m your AI assistant. I can help you with programming questions, general knowledge, and much more. If I don\'t know something, I can search external sources like Reddit and Stack Overflow for you.',
-      sender: 'bot',
-      timestamp: new Date(),
-    }
-  ]);
 
-  const [chatHistory] = useState<ChatHistory[]>([
-    {
-      id: '1',
-      title: 'React Hooks Best Practices',
-      createdAt: new Date(Date.now() - 86400000 * 2),
-      updatedAt: new Date(Date.now() - 86400000),
-      tags: ['react', 'javascript', 'frontend'],
-      hasExternalSources: true,
-    },
-    {
-      id: '2',
-      title: 'Python Data Analysis Question',
-      createdAt: new Date(Date.now() - 86400000 * 5),
-      updatedAt: new Date(Date.now() - 86400000 * 3),
-      tags: ['python', 'data-science'],
-      hasExternalSources: false,
-    },
-    {
-      id: '3',
-      title: 'CSS Grid Layout Help',
-      createdAt: new Date(Date.now() - 86400000 * 7),
-      updatedAt: new Date(Date.now() - 86400000 * 6),
-      tags: ['css', 'layout', 'frontend'],
-      hasExternalSources: true,
-    }
-  ]);
+  const displayName = profile?.full_name || profile?.username || user?.email?.split('@')[0] || 'User';
 
-  // Theme management
-  useEffect(() => {
-    const theme = localStorage.getItem('theme');
-    if (theme === 'dark') {
-      setIsDark(true);
-      document.documentElement.classList.add('dark');
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const newTheme = !isDark;
-    setIsDark(newTheme);
-    
-    if (newTheme) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  };
-
-  const handleSendMessage = async (content: string) => {
-    const userMessage: Message = {
+  const handleSendMessage = (content: string) => {
+    const userMessage = {
       id: Date.now().toString(),
       content,
-      sender: 'user',
+      isUser: true,
       timestamp: new Date(),
     };
 
     setMessages(prev => [...prev, userMessage]);
-    setIsLoading(true);
 
     // Simulate AI response
     setTimeout(() => {
-      // Check if we should prompt for external sources
-      const shouldSearchExternal = content.toLowerCase().includes('error') || 
-                                  content.toLowerCase().includes('bug') ||
-                                  content.toLowerCase().includes('issue') ||
-                                  content.toLowerCase().includes('problem');
-
-      if (shouldSearchExternal && Math.random() > 0.5) {
-        setCurrentQuery(content);
-        setExternalSourceOpen(true);
-        setIsLoading(false);
-      } else {
-        // Generate a mock response
-        const responses = [
-          "That's a great question! Here's what I can tell you:\n\n```javascript\nconst example = () => {\n  console.log('Hello, World!');\n};\n```\n\nThis demonstrates a basic function in JavaScript.",
-          "I'd be happy to help you with that. Let me break it down:\n\n1. **First step**: Understanding the problem\n2. **Second step**: Planning the solution\n3. **Third step**: Implementation\n\nWould you like me to elaborate on any of these steps?",
-          "Based on my knowledge, here's the most effective approach:\n\n> **Important Note**: This is a best practice recommendation.\n\nThe key principle to remember is that consistency and readability should always be your priority.",
-        ];
-
-        const botMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          content: responses[Math.floor(Math.random() * responses.length)],
-          sender: 'bot',
-          timestamp: new Date(),
-        };
-
-        setMessages(prev => [...prev, botMessage]);
-        setIsLoading(false);
-      }
-    }, 1500);
+      const aiMessage = {
+        id: (Date.now() + 1).toString(),
+        content: "I'm a demo AI assistant. In a real application, this would be connected to an actual AI service.",
+        isUser: false,
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, aiMessage]);
+    }, 1000);
   };
 
-  const handleExternalSourceApprove = () => {
-    setExternalSourceOpen(false);
-    setIsLoading(true);
-
-    // Simulate external source search
-    setTimeout(() => {
-      const botMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: `I searched external sources for "${currentQuery}" and found some helpful information:\n\n**From Reddit r/programming:**\n\n> This is a common issue that many developers face. The solution usually involves checking your configuration files.\n\n**From Stack Overflow:**\n\n\`\`\`python\n# Here's a working solution\ndef fix_issue():\n    return "Problem solved!"\n\`\`\`\n\nThese sources provided comprehensive solutions that should help resolve your issue.`,
-        sender: 'bot',
+  const handleDeleteHistory = () => {
+    setMessages([
+      {
+        id: '1',
+        content: 'Hello! How can I help you today?',
+        isUser: false,
         timestamp: new Date(),
-        sources: ['Reddit r/programming', 'Stack Overflow', 'GitHub Issues'],
-      };
+      },
+    ]);
+    toast({
+      title: 'Chat history deleted',
+      description: 'All messages have been cleared.',
+    });
+  };
 
-      setMessages(prev => [...prev, botMessage]);
-      setIsLoading(false);
-    }, 2000);
+  const toggleTheme = () => {
+    setIsDark(!isDark);
+    document.documentElement.classList.toggle('dark');
   };
 
   const handleNewChat = () => {
     setMessages([
       {
         id: '1',
-        content: 'Hello! I\'m your AI assistant. How can I help you today?',
-        sender: 'bot',
+        content: 'Hello! How can I help you today?',
+        isUser: false,
         timestamp: new Date(),
-      }
+      },
     ]);
   };
 
   return (
-    <div className="h-screen flex bg-chat-bg">
-      {/* Sidebar */}
+    <div className="h-screen flex bg-background">
       <ChatSidebar
         isCollapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         isDark={isDark}
         onToggleTheme={toggleTheme}
         onNewChat={handleNewChat}
-        onOpenSettings={() => setUserSettingsOpen(true)}
-        chatHistory={chatHistory}
+        onOpenSettings={() => {}} // Removed settings functionality
+        chatHistory={[]}
         activeChatId="1"
         onSelectChat={(id) => console.log('Selected chat:', id)}
       />
 
-      {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Mobile Header */}
-        <div className="lg:hidden bg-chat-header border-b border-border p-4 flex items-center justify-between">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          >
-            <Menu className="w-5 h-5" />
-          </Button>
-          <h1 className="font-semibold">GodotChat</h1>
-          <div className="w-8" /> {/* Spacer */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <div className="h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-6">
+          <div className="flex items-center gap-4">
+            <h1 className="text-lg font-semibold">Chat</h1>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" size="sm" className="text-destructive hover:text-destructive">
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Clear History
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Chat History</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to delete all chat messages? This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDeleteHistory} className="bg-destructive hover:bg-destructive/90">
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+          <UserProfilePopover>
+            <Avatar className="h-8 w-8 cursor-pointer hover:opacity-80 transition-opacity">
+              <AvatarImage src={profile?.avatar_url} />
+              <AvatarFallback>
+                {displayName?.charAt(0).toUpperCase() || 'U'}
+              </AvatarFallback>
+            </Avatar>
+          </UserProfilePopover>
         </div>
 
-        {/* Messages Area */}
-        <ScrollArea className="flex-1">
-          <div className="py-6">
+        {/* Messages */}
+        <div className="flex-1 overflow-auto p-6">
+          <div className="max-w-4xl mx-auto space-y-6">
             {messages.map((message) => (
               <ChatMessage
                 key={message.id}
-                message={message}
+                message={{
+                  id: message.id,
+                  content: message.content,
+                  sender: message.isUser ? 'user' : 'bot',
+                  timestamp: message.timestamp,
+                }}
                 isDark={isDark}
               />
             ))}
-            {isLoading && (
-              <div className="flex gap-3 max-w-4xl mx-auto p-4">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                  <div className="w-4 h-4 rounded-full bg-muted-foreground animate-pulse" />
-                </div>
-                <div className="bg-chat-bubble-bot text-chat-bubble-bot-foreground px-4 py-3 rounded-2xl shadow-chat">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse" />
-                    <div className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse delay-100" />
-                    <div className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse delay-200" />
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
-        </ScrollArea>
+        </div>
 
-        {/* Input Area */}
-        <ChatInput
-          onSendMessage={handleSendMessage}
-          onOpenChatSettings={() => setChatSettingsOpen(true)}
-          isLoading={isLoading}
-          placeholder="Ask me anything... I can help with coding, general questions, and more!"
-        />
+        {/* Input */}
+        <div className="border-t p-6">
+          <ChatInput
+            onSendMessage={handleSendMessage}
+            onOpenChatSettings={() => {}}
+            isLoading={false}
+            placeholder="Type your message..."
+          />
+        </div>
       </div>
-
-      {/* Dialogs */}
-      <SettingsDialog
-        open={userSettingsOpen}
-        onOpenChange={setUserSettingsOpen}
-        title="User Settings"
-        description="Manage your account settings and preferences."
-      />
-      
-      <SettingsDialog
-        open={chatSettingsOpen}
-        onOpenChange={setChatSettingsOpen}
-        title="Chat Settings"
-        description="Configure chat behavior and preferences."
-      />
-
-      <ExternalSourceDialog
-        open={externalSourceOpen}
-        onOpenChange={setExternalSourceOpen}
-        onApprove={handleExternalSourceApprove}
-        query={currentQuery}
-      />
     </div>
   );
 };
