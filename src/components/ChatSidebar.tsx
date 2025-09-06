@@ -167,19 +167,6 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
             )}
           </Button>
           
-          <Button
-            variant="ghost"
-            size={isCollapsed ? "sm" : "default"}
-            onClick={onOpenSettings}
-            className={cn(
-              "hover:bg-sidebar-item-hover",
-              isCollapsed ? "w-8 h-8 p-0" : "w-full justify-start"
-            )}
-          >
-            <Settings className="w-4 h-4" />
-            {!isCollapsed && <span className="ml-2">User Settings</span>}
-          </Button>
-          
           <UserProfilePopover>
             <Button
               variant="ghost"

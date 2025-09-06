@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -6,6 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { LogOut, User } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { ProfileSettingsDialog } from '@/components/ProfileSettingsDialog';
 
 interface UserProfilePopoverProps {
   children: React.ReactNode;
@@ -14,6 +15,7 @@ interface UserProfilePopoverProps {
 export const UserProfilePopover = ({ children }: UserProfilePopoverProps) => {
   const { user, profile, signOut } = useAuth();
   const { toast } = useToast();
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
 
   const handleSignOut = async () => {
     const { error } = await signOut();
@@ -62,7 +64,12 @@ export const UserProfilePopover = ({ children }: UserProfilePopoverProps) => {
 
           {/* Actions */}
           <div className="space-y-1">
-            <Button variant="ghost" className="w-full justify-start" size="sm">
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start" 
+              size="sm"
+              onClick={() => setProfileDialogOpen(true)}
+            >
               <User className="mr-2 h-4 w-4" />
               Profile Settings
             </Button>
@@ -78,6 +85,11 @@ export const UserProfilePopover = ({ children }: UserProfilePopoverProps) => {
           </div>
         </div>
       </PopoverContent>
+
+      <ProfileSettingsDialog
+        open={profileDialogOpen}
+        onOpenChange={setProfileDialogOpen}
+      />
     </Popover>
   );
 };
