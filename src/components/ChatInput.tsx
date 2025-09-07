@@ -49,10 +49,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="sticky bottom-0 bg-chat-header border-t border-border p-4">
-      <div className="max-w-4xl mx-auto">
+    <div className="absolute bottom-4 inset-x-2 sm:inset-x-4 md:inset-x-8 z-50 pointer-events-none">
+      <div className="mx-auto max-w-3xl sm:max-w-4xl pointer-events-auto">
         <form onSubmit={handleSubmit} className="relative">
-          <div className="flex items-end gap-2 bg-chat-input rounded-2xl border border-border p-3 shadow-chat">
+          <div className="flex items-end gap-2 rounded-2xl border border-border/60 p-3 shadow-chat bg-gradient-to-r from-background/60 via-background/40 to-background/60 backdrop-blur-md">
             <Button
               type="button"
               variant="ghost"

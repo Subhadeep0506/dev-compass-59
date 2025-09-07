@@ -83,10 +83,10 @@ const Landing = () => {
                 {icon: <Cpu className="w-5 h-5" />, title: 'Model-flexible', desc: 'Switch between providers without rewrites.'},
                 {icon: <Globe className="w-5 h-5" />, title: 'Citations & web', desc: 'Ground outputs with verifiable sources.'},
               ].map((f, i) => (
-                <div key={i} className="relative rounded-2xl p-[1px] bg-gradient-to-b from-fuchsia-500/40 via-violet-500/25 to-cyan-400/35">
-                  <Card className="bg-background/60 backdrop-blur-xl ring-1 ring-border/40 transition-all duration-300 hover:-translate-y-1 shadow-sm hover:shadow-elegant">
+                <div key={i} className="relative rounded-2xl p-[1px] overflow-hidden bg-gradient-to-b from-fuchsia-500/40 via-violet-500/25 to-cyan-400/35">
+                  <Card className="bg-background/60 backdrop-blur-xl ring-1 ring-border/40 transition-all duration-300 hover:-translate-y-1 shadow-sm hover:shadow-elegant overflow-hidden min-h-[150px]">
                     <CardHeader className="flex-row items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-fuchsia-600/20 text-fuchsia-300 flex items-center justify-center">{f.icon}</div>
+                      <div className="h-8 w-8 rounded-full bg-fuchsia-600/20 text-white flex items-center justify-center">{f.icon}</div>
                       <CardTitle className="text-lg">{f.title}</CardTitle>
                     </CardHeader>
                     <CardContent className="pt-0 text-sm text-foreground/90">{f.desc}</CardContent>

@@ -1,21 +1,24 @@
-import React, { useState } from 'react';
-import { 
-  MessageSquare, 
-  User, 
-  Settings, 
-  Moon, 
-  Sun, 
-  Plus, 
+import React, { useMemo, useState } from 'react';
+import {
+  MessageSquare,
+  User,
+  Settings,
+  Moon,
+  Sun,
+  Plus,
   MoreHorizontal,
   Globe,
   Hash,
-  Clock
+  Clock,
+  Trash2,
+  SlidersHorizontal
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { UserProfilePopover } from '@/components/UserProfilePopover';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
@@ -26,6 +29,7 @@ interface ChatHistory {
   updatedAt: Date;
   tags: string[];
   hasExternalSources: boolean;
+  pinned?: boolean;
 }
 
 interface ChatSidebarProps {
@@ -38,6 +42,9 @@ interface ChatSidebarProps {
   chatHistory: ChatHistory[];
   activeChatId?: string;
   onSelectChat: (chatId: string) => void;
+  onDeleteChat: (chatId: string) => void;
+  onTogglePin: (chatId: string) => void;
+  onOpenRightPanel: () => void;
 }
 
 export const ChatSidebar: React.FC<ChatSidebarProps> = ({
@@ -50,18 +57,28 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
   chatHistory,
   activeChatId,
   onSelectChat,
+  onDeleteChat,
+  onTogglePin,
+  onOpenRightPanel,
 }) => {
   const { user, profile } = useAuth();
-  
+  const [query, setQuery] = useState('');
+
   const displayName = profile?.full_name || profile?.username || user?.email?.split('@')[0] || 'User';
+  const filtered = useMemo(() => {
+    const q = query.toLowerCase();
+    return chatHistory.filter(c => c.title.toLowerCase().includes(q));
+  }, [chatHistory, query]);
+  const pinned = filtered.filter(c => c.pinned);
+  const recent = filtered.filter(c => !c.pinned);
   return (
     <div className={cn(
-      "bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300",
-      isCollapsed ? "w-16" : "w-80"
+      "bg-sidebar border-r border-sidebar-border flex flex-col h-full transition-all duration-300",
+      "w-full"
     )}>
       {/* Header */}
       <div className="p-4 border-b border-sidebar-border">
-        <div className="flex items-center justify-between">
+        <div className={`flex items-center ${isCollapsed ? "justify-center" : "justify-between"}`}>
           {!isCollapsed && (
             <h1 className="font-semibold text-sidebar-foreground">ChatBot UI</h1>
           )}
@@ -70,40 +87,100 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
             size="sm"
             onClick={onToggleCollapse}
             className="hover:bg-sidebar-item-hover"
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            title={isCollapsed ? "Expand" : "Collapse"}
           >
             <MoreHorizontal className="w-4 h-4" />
           </Button>
         </div>
-        
+
         {!isCollapsed && (
-          <Button
-            onClick={onNewChat}
-            className="w-full mt-3 bg-gradient-primary hover:opacity-90 transition-opacity"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            New Chat
-          </Button>
+          <>
+            <Button
+              onClick={onNewChat}
+              className="w-full mt-3 bg-gradient-primary hover:opacity-90 transition-opacity"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              New Chat
+            </Button>
+            <div className="mt-3">
+              <input
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                placeholder="Search chats"
+                className="w-full h-9 rounded-md border bg-background px-3 text-sm"
+              />
+            </div>
+          </>
         )}
       </div>
+
+      {isCollapsed && (
+        <>
+          <div className="p-3 flex items-center justify-center">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onNewChat}
+              className="w-8 h-8 p-0 hover:bg-sidebar-item-hover"
+              aria-label="New Chat"
+              title="New Chat"
+            >
+              <Plus className="w-4 h-4" />
+            </Button>
+          </div>
+          <div className="flex-1" />
+        </>
+      )}
 
       {/* Chat History */}
       {!isCollapsed && (
         <div className="flex-1 flex flex-col min-h-0">
           <div className="p-4 pb-2">
+            <h2 className="text-sm font-medium text-sidebar-foreground mb-2">Pinned</h2>
+          </div>
+          <ScrollArea className="max-h-40 px-2">
+            <div className="space-y-2 p-2">
+              {pinned.length === 0 && (
+                <div className="text-xs text-muted-foreground px-2">No pinned chats</div>
+              )}
+              {pinned.map((chat) => (
+                <div key={chat.id} className={cn(
+                  'w-full p-3 rounded-lg text-left transition-colors group',
+                  'hover:bg-sidebar-item-hover',
+                  activeChatId === chat.id ? 'bg-sidebar-item-active text-sidebar-accent-foreground' : 'text-sidebar-foreground'
+                )} onClick={() => onSelectChat(chat.id)}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <MessageSquare className="w-4 h-4 flex-shrink-0" />
+                      <h3 className="font-medium truncate text-sm">{chat.title}</h3>
+                    </div>
+                    <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); onTogglePin(chat.id); }} title="Unpin">
+                      ★
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+
+          <div className="p-4 pb-2">
             <h2 className="text-sm font-medium text-sidebar-foreground mb-2">Recent Chats</h2>
           </div>
-          
+
           <ScrollArea className="flex-1 px-2">
             <div className="space-y-2 p-2">
-              {chatHistory.map((chat) => (
-                <button
+              {recent.map((chat) => (
+                <div
+                  role="button"
+                  tabIndex={0}
                   key={chat.id}
                   onClick={() => onSelectChat(chat.id)}
                   className={cn(
                     "w-full p-3 rounded-lg text-left transition-colors group",
                     "hover:bg-sidebar-item-hover",
-                    activeChatId === chat.id 
-                      ? "bg-sidebar-item-active text-sidebar-accent-foreground" 
+                    activeChatId === chat.id
+                      ? "bg-sidebar-item-active text-sidebar-accent-foreground"
                       : "text-sidebar-foreground"
                   )}
                 >
@@ -112,17 +189,49 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
                       <MessageSquare className="w-4 h-4 flex-shrink-0" />
                       <h3 className="font-medium truncate text-sm">{chat.title}</h3>
                     </div>
-                    {chat.hasExternalSources && (
-                      <Globe className="w-3 h-3 text-muted-foreground flex-shrink-0 ml-1" />
-                    )}
+                    <div className="flex items-center gap-1 ml-1">
+                      {chat.hasExternalSources && (
+                        <Globe className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                      )}
+                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); onTogglePin(chat.id); }} title="Pin">
+                        ☆
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100"
+                            onClick={(e) => { e.stopPropagation(); }}
+                            title="Delete chat"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Chat</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This will permanently delete this chat and its messages. Are you sure?
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => onDeleteChat(chat.id)} className="bg-destructive hover:bg-destructive/90">
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Clock className="w-3 h-3" />
                       <span>Updated {chat.updatedAt.toLocaleDateString()}</span>
                     </div>
-                    
+
                     {chat.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1">
                         {chat.tags.slice(0, 2).map((tag, index) => (
@@ -139,7 +248,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
                       </div>
                     )}
                   </div>
-                </button>
+                </div>
               ))}
             </div>
           </ScrollArea>
@@ -166,7 +275,22 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
               <span className="ml-2">{isDark ? 'Light Mode' : 'Dark Mode'}</span>
             )}
           </Button>
-          
+
+          <Button
+            variant="ghost"
+            size={isCollapsed ? "sm" : "default"}
+            onClick={onOpenRightPanel}
+            className={cn(
+              "hover:bg-sidebar-item-hover",
+              isCollapsed ? "w-8 h-8 p-0" : "w-full justify-start"
+            )}
+          >
+            <SlidersHorizontal className="w-4 h-4" />
+            {!isCollapsed && (
+              <span className="ml-2">Assistant Panel</span>
+            )}
+          </Button>
+
           <UserProfilePopover>
             <Button
               variant="ghost"
