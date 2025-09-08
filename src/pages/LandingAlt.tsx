@@ -1,38 +1,58 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Card, CardBody, Navbar, NavbarBrand, NavbarContent, NavbarItem, Link } from "@heroui/react";
 import { Icon } from "@iconify/react";
+import { cn } from "@/lib/utils";
 
 export default function Landing() {
+    const [scrolled, setScrolled] = useState(false);
+
+    useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > 0);
+        onScroll();
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => window.removeEventListener("scroll", onScroll);
+    }, []);
+
     return (
         <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
             {/* Animated background */}
             <div className="animated-bg fixed inset-0 z-0 pointer-events-none"></div>
 
             {/* Header */}
-            <Navbar maxWidth="xl" className="bg-background/80 shadow-md bg-transparent backdrop-blur-md border-b border-divider">
-                <NavbarBrand>
-                    <div className="flex items-center gap-2">
-                        <Icon icon="logos:godot-icon" width={32} />
-                        <p className="font-bold text-inherit text-xl">Godot Assistant</p>
-                    </div>
-                </NavbarBrand>
-                <NavbarContent justify="end">
-                    <NavbarItem className="hidden sm:flex">
-                        <Link color="foreground" href="/auth">
-                            <Button variant="bordered">Log In</Button>
-                        </Link>
-                    </NavbarItem>
-                    <NavbarItem>
-                        <Link href="/auth?mode=register">
-                            <Button color="primary" variant="flat" radius="sm" className="shadow-elegant">Sign Up</Button>
-                        </Link>
-                    </NavbarItem>
-                </NavbarContent>
-            </Navbar>
+            <div className="fixed top-0 left-0 right-0 z-50">
+                <Navbar
+                    maxWidth="xl"
+                    className={cn(
+                        "w-full backdrop-blur-xl transition-all duration-300 bg-transparent",
+                        scrolled
+                            ? "bg-background/75 shadow-lg ring-1 ring-border/50"
+                            : "bg-gradient-to-b from-background/70 via-background/40 to-transparent shadow-none"
+                    )}
+                >
+                    <NavbarBrand>
+                        <div className="flex items-center gap-2">
+                            <Icon icon="logos:godot-icon" width={32} />
+                            <p className="font-bold text-inherit text-xl">Godot Assistant</p>
+                        </div>
+                    </NavbarBrand>
+                    <NavbarContent justify="end">
+                        <NavbarItem className="hidden sm:flex">
+                            <Link color="foreground" href="/auth">
+                                <Button variant="ghost" radius="md">Log In</Button>
+                            </Link>
+                        </NavbarItem>
+                        <NavbarItem>
+                            <Link href="/auth?mode=register">
+                                <Button color="primary" variant="flat" radius="md" className="shadow-elegant">Sign Up</Button>
+                            </Link>
+                        </NavbarItem>
+                    </NavbarContent>
+                </Navbar>
+            </div>
 
-            <main className="relative z-10">
+            <main className="relative z-10 ">
                 {/* Hero Section */}
-                <div className="relative overflow-hidden bg-background pt-16 pb-24">
+                <div className="relative overflow-hidden bg-background pt-48 pb-24">
                     <div className="absolute inset-0 z-0">
                         <div className="absolute inset-0 bg-gradient-to-br from-primary-100/30 to-secondary-100/30 dark:from-primary-900/20 dark:to-secondary-900/20" />
                         <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 transform">
@@ -55,22 +75,26 @@ export default function Landing() {
                                     Access Godot documentation, community solutions, and code examples in seconds.
                                 </p>
                                 <div className="mt-10 flex flex-col sm:flex-row sm:justify-center lg:justify-start gap-4">
-                                    <Button
-                                        size="lg"
-                                        color="primary"
-                                        className="font-medium"
-                                        startContent={<Icon icon="lucide:zap" width={20} />}
-                                    >
-                                        Try It Now
-                                    </Button>
-                                    <Button
-                                        size="lg"
-                                        variant="bordered"
-                                        className="font-medium"
-                                        startContent={<Icon icon="lucide:play" width={20} />}
-                                    >
-                                        Watch Demo
-                                    </Button>
+                                    <Link href="/auth?mode=register">
+                                        <Button
+                                            size="lg"
+                                            color="primary"
+                                            className="font-medium"
+                                            startContent={<Icon icon="lucide:zap" width={20} />}
+                                        >
+                                            Try It Now
+                                        </Button>
+                                    </Link>
+                                    <Link href="/auth">
+                                        <Button
+                                            size="lg"
+                                            variant="bordered"
+                                            className="font-medium"
+                                            startContent={<Icon icon="lucide:log-in" width={20} />}
+                                        >
+                                            Login
+                                        </Button>
+                                    </Link>
                                 </div>
                                 <div className="mt-8 flex items-center justify-center lg:justify-start gap-2 text-foreground-500">
                                     <Icon icon="lucide:shield-check" className="text-success" width={20} />
@@ -125,7 +149,7 @@ func _physics_process(delta):
 
     # Get input direction
     var direction = Input.get_axis("ui_left", "ui_right")
-    
+
     # Handle movement
     if direction:
         velocity.x = direction * speed
@@ -256,9 +280,11 @@ func _physics_process(delta):
                         <p className="text-foreground-500 max-w-2xl mx-auto mb-8">
                             Join thousands of developers who are building amazing games and applications with the help of Godot Assistant.
                         </p>
-                        <Button size="lg" color="primary" className="font-medium">
-                            Get Started for Free
-                        </Button>
+                        <Link href="/auth?mode=register">
+                            <Button size="lg" color="primary" className="font-medium">
+                                Get Started for Free
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </main>
