@@ -228,3 +228,27 @@
     @apply border-l-4 border-primary pl-4 italic;
   }
 }
+
+@layer utilities {
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradientShift 22s ease-in-out infinite alternate;
+  }
+  .animate-blob {
+    animation: blobFloat 18s ease-in-out infinite;
+  }
+  .animation-delay-2000 { animation-delay: 2s; }
+  .animation-delay-4000 { animation-delay: 4s; }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 0%; transform: scale(1); }
+  50% { background-position: 100% 50%; transform: scale(1.02); }
+  100% { background-position: 0% 100%; transform: scale(1.04); }
+}
+
+@keyframes blobFloat {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.08); }
+  66% { transform: translate(-24px, 18px) scale(0.96); }
+}
