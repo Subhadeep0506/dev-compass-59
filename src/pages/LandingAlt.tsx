@@ -9,43 +9,23 @@ export default function Landing() {
             <div className="animated-bg fixed inset-0 z-0 pointer-events-none"></div>
 
             {/* Header */}
-            <Navbar maxWidth="xl" className="bg-background/80 backdrop-blur-md border-b border-divider">
+            <Navbar maxWidth="xl" className="bg-background/80 shadow-md bg-transparent backdrop-blur-md border-b border-divider">
                 <NavbarBrand>
                     <div className="flex items-center gap-2">
                         <Icon icon="logos:godot-icon" width={32} />
                         <p className="font-bold text-inherit text-xl">Godot Assistant</p>
                     </div>
                 </NavbarBrand>
-                <NavbarContent className="hidden sm:flex gap-4" justify="center">
-                    <NavbarItem>
-                        <Link color="foreground" href="#features">
-                            Features
-                        </Link>
-                    </NavbarItem>
-                    <NavbarItem>
-                        <Link color="foreground" href="#demo">
-                            Demo
-                        </Link>
-                    </NavbarItem>
-                    <NavbarItem>
-                        <Link color="foreground" href="#pricing">
-                            Pricing
-                        </Link>
-                    </NavbarItem>
-                    <NavbarItem>
-                        <Link color="foreground" href="#docs">
-                            Documentation
-                        </Link>
-                    </NavbarItem>
-                </NavbarContent>
                 <NavbarContent justify="end">
                     <NavbarItem className="hidden sm:flex">
-                        <Link color="foreground" href="#login">Log In</Link>
+                        <Link color="foreground" href="/auth">
+                            <Button variant="bordered">Log In</Button>
+                        </Link>
                     </NavbarItem>
                     <NavbarItem>
-                        <Button color="primary" variant="flat" radius="sm">
-                            Sign Up
-                        </Button>
+                        <Link href="/auth?mode=register">
+                            <Button color="primary" variant="flat" radius="sm" className="shadow-elegant">Sign Up</Button>
+                        </Link>
                     </NavbarItem>
                 </NavbarContent>
             </Navbar>

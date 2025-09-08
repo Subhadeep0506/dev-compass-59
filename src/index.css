@@ -1,13 +1,14 @@
 @import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* Modern Chatbot UI Design System - All colors MUST be HSL */
 
-
 :root {
-  font-family: "Geist", sans-serif;
+  font-family: "Inter" !important;
 }
 
 @layer base {
@@ -117,7 +118,9 @@
     /* Component Colors */
     --card: 222 84% 5%;
     --card-foreground: 210 40% 98%;
-    --popover: 222 84% 5%;
+    --popover:"font_size_sm": 11,
+		"font_size": 12,
+		"font_size_lg": 13, 222 84% 5%;
     --popover-foreground: 210 40% 98%;
 
     /* Primary Brand */
@@ -180,6 +183,7 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-family: "Geist" !important;
   }
 
   /* Custom Scrollbars */
