@@ -25,7 +25,7 @@ export default function Landing() {
                     className={cn(
                         "w-full backdrop-blur-xl transition-all duration-300 bg-transparent",
                         scrolled
-                            ? "bg-background/75 shadow-lg ring-1 ring-border/50"
+                            ? "bg-background/65 shadow-sm border-b-1 border-b-slate-200 glass-effect"
                             : "bg-gradient-to-b from-background/70 via-background/40 to-transparent shadow-none"
                     )}
                 >
@@ -96,12 +96,13 @@ export default function Landing() {
                                         </Button>
                                     </Link>
                                 </div>
-                                <div className="mt-8 flex items-center justify-center lg:justify-start gap-2 text-foreground-500">
-                                    <Icon icon="lucide:shield-check" className="text-success" width={20} />
-                                    <span className="text-sm">No credit card required</span>
-                                    <span className="mx-2">•</span>
-                                    <Icon icon="lucide:sparkles" className="text-warning" width={20} />
-                                    <span className="text-sm">Free tier available</span>
+                                <div className="mt-8 flex items-center justify-center lg:justify-evenly gap-2 text-foreground-500">
+                                    <Icon icon="lucide:shield-check" className="text-success" width={18} />
+                                    <span className="text-sm">Fully Local and Secure</span>
+                                    <Icon icon="lucide:sparkles" className="text-warning" width={18} />
+                                    <span className="text-sm">Updated Document Sources</span>
+                                    <Icon icon="lucide:refresh-cw" className="text-primary-900" width={18} />
+                                    <span className="text-sm">Real-time web Search</span>
                                 </div>
                             </div>
                             <div className="mt-16 sm:mt-24 lg:col-span-6 lg:mt-0">

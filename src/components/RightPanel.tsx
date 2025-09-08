@@ -56,7 +56,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
         </DialogHeader>
         <div className="px-6 pb-6">
           <Tabs defaultValue="context" className="flex-1 flex flex-col min-h-0">
-            <TabsList>
+            <TabsList className='grid grid-cols-4 max-w-fit self-center'>
               <TabsTrigger value="context">Context</TabsTrigger>
               <TabsTrigger value="tools">Tools</TabsTrigger>
               <TabsTrigger value="attachments">Attachments</TabsTrigger>
