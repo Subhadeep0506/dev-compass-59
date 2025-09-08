@@ -1,8 +1,14 @@
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* Modern Chatbot UI Design System - All colors MUST be HSL */
+
+
+:root {
+  font-family: "Geist", sans-serif;
+}
 
 @layer base {
   :root {
@@ -18,7 +24,7 @@
     --chat-bubble-user-foreground: 0 0% 100%;
     --chat-bubble-bot: 0 0% 100%;
     --chat-bubble-bot-foreground: 220 14% 8%;
-    
+
     /* Sidebar Colors */
     --sidebar-bg: 0 0% 100%;
     --sidebar-item-hover: 0 0% 96%;
@@ -61,7 +67,11 @@
 
     /* Design Tokens */
     --radius: 0.5rem;
-    --gradient-primary: linear-gradient(135deg, hsl(266 85% 58%), hsl(266 100% 70%));
+    --gradient-primary: linear-gradient(
+      135deg,
+      hsl(266 85% 58%),
+      hsl(266 100% 70%)
+    );
     --gradient-sidebar: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 98%));
     --shadow-elegant: 0 10px 30px -10px hsl(266 85% 58% / 0.1);
     --shadow-chat: 0 2px 8px hsl(220 14% 8% / 0.08);
@@ -97,7 +107,7 @@
     --chat-bubble-user-foreground: 0 0% 100%;
     --chat-bubble-bot: 222 84% 5%;
     --chat-bubble-bot-foreground: 210 40% 98%;
-    
+
     /* Sidebar Colors */
     --sidebar-bg: 222 84% 5%;
     --sidebar-item-hover: 215 28% 17%;
@@ -139,8 +149,16 @@
     --ring: 266 85% 58%;
 
     /* Design Tokens */
-    --gradient-primary: linear-gradient(135deg, hsl(266 85% 58%), hsl(266 100% 70%));
-    --gradient-sidebar: linear-gradient(180deg, hsl(222 84% 5%), hsl(224 71% 4%));
+    --gradient-primary: linear-gradient(
+      135deg,
+      hsl(266 85% 58%),
+      hsl(266 100% 70%)
+    );
+    --gradient-sidebar: linear-gradient(
+      180deg,
+      hsl(222 84% 5%),
+      hsl(224 71% 4%)
+    );
     --shadow-elegant: 0 10px 30px -10px hsl(266 85% 58% / 0.2);
     --shadow-chat: 0 2px 8px hsl(0 0% 0% / 0.3);
     --sidebar-background: 240 5.9% 10%;
@@ -212,7 +230,8 @@
     @apply mb-3 last:mb-0 leading-relaxed;
   }
 
-  .message-content ul, .message-content ol {
+  .message-content ul,
+  .message-content ol {
     @apply mb-3 pl-4;
   }
 
@@ -237,18 +256,115 @@
   .animate-blob {
     animation: blobFloat 18s ease-in-out infinite;
   }
-  .animation-delay-2000 { animation-delay: 2s; }
-  .animation-delay-4000 { animation-delay: 4s; }
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
 }
 
 @keyframes gradientShift {
-  0% { background-position: 0% 0%; transform: scale(1); }
-  50% { background-position: 100% 50%; transform: scale(1.02); }
-  100% { background-position: 0% 100%; transform: scale(1.04); }
+  0% {
+    background-position: 0% 0%;
+    transform: scale(1);
+  }
+  50% {
+    background-position: 100% 50%;
+    transform: scale(1.02);
+  }
+  100% {
+    background-position: 0% 100%;
+    transform: scale(1.04);
+  }
 }
 
 @keyframes blobFloat {
-  0%, 100% { transform: translate(0px, 0px) scale(1); }
-  33% { transform: translate(30px, -20px) scale(1.08); }
-  66% { transform: translate(-24px, 18px) scale(0.96); }
+  0%,
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -20px) scale(1.08);
+  }
+  66% {
+    transform: translate(-24px, 18px) scale(0.96);
+  }
+}
+
+.animated-bg {
+  background: linear-gradient(
+    -45deg,
+    rgba(0, 111, 238, 0.05),
+    rgba(120, 40, 200, 0.05),
+    rgba(23, 201, 100, 0.05),
+    rgba(245, 165, 36, 0.05)
+  );
+  background-size: 400% 400%;
+  animation: gradient-shift 15s ease infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.animated-bg::before {
+  content: "";
+  position: absolute;
+  top: 10%;
+  right: 15%;
+  width: 40vw;
+  height: 40vw;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(0, 111, 238, 0.1) 0%,
+    rgba(120, 40, 200, 0.05) 100%
+  );
+  filter: blur(60px);
+  opacity: 0.7;
+  animation: blob-movement 20s ease-in-out infinite;
+}
+
+.animated-bg::after {
+  content: "";
+  position: absolute;
+  bottom: 15%;
+  left: 10%;
+  width: 35vw;
+  height: 35vw;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(23, 201, 100, 0.1) 0%,
+    rgba(245, 165, 36, 0.05) 100%
+  );
+  filter: blur(60px);
+  opacity: 0.7;
+  animation: blob-movement 25s ease-in-out infinite reverse;
+}
+
+.dark .animated-bg {
+  background: linear-gradient(
+    -45deg,
+    rgba(0, 111, 238, 0.1),
+    rgba(120, 40, 200, 0.1),
+    rgba(23, 201, 100, 0.1),
+    rgba(245, 165, 36, 0.1)
+  );
+  background-size: 400% 400%;
+}
+
+.dark .animated-bg::before {
+  background: radial-gradient(
+    circle,
+    rgba(0, 111, 238, 0.15) 0%,
+    rgba(120, 40, 200, 0.1) 100%
+  );
+}
+
+.dark .animated-bg::after {
+  background: radial-gradient(
+    circle,
+    rgba(23, 201, 100, 0.15) 0%,
+    rgba(245, 165, 36, 0.1) 100%
+  );
 }
