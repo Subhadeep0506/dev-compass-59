@@ -20,6 +20,7 @@ import { Separator } from '@/components/ui/separator';
 import { UserProfilePopover } from '@/components/UserProfilePopover';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useAuth } from '@/hooks/useAuth';
+import { useAppStore } from '@/store';
 import { cn } from '@/lib/utils';
 
 interface ChatHistory {
@@ -62,9 +63,11 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
   onOpenRightPanel,
 }) => {
   const { user, profile } = useAuth();
+  const storeUser = useAppStore((state) => state.user);
   const [query, setQuery] = useState('');
 
-  const displayName = profile?.full_name || profile?.username || user?.email?.split('@')[0] || 'User';
+  // Use store user data if available, fallback to auth profile
+  const displayName = storeUser?.full_name || profile?.full_name || storeUser?.username || profile?.username || user?.email?.split('@')[0] || 'User';
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
     return chatHistory.filter(c => c.title.toLowerCase().includes(q));

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useMemo, useRef, useEffect } from 'react';
 import { ChatSidebar } from '@/components/ChatSidebar';
 import { ChatMessage } from '@/components/ChatMessage';
 import { ChatInput } from '@/components/ChatInput';
@@ -11,67 +11,50 @@ import { RightPanel } from '@/components/RightPanel';
 import { Button } from '@/components/ui/button';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { ImperativePanelHandle } from 'react-resizable-panels';
-
-interface Message {
-  id: string;
-  content: string;
-  isUser: boolean;
-  timestamp: Date;
-  sources?: string[];
-}
+import { useAppStore } from '@/store';
+import { ChatSession, Message } from '@/store/types';
 
 const Index = () => {
   const { user, profile } = useAuth();
-  const initialMessage: Message = {
-    id: '1',
-    content:
-      'Hi! Ask me anything about the Godot docs. I can format answers with markdown, code blocks, tables, and lists. If the docs lack an answer, I can search sources like Reddit, the web, and GitHub after you approve.',
-    isUser: false,
-    timestamp: new Date(),
-  };
-  interface ChatSession {
-    id: string;
-    title: string;
-    createdAt: Date;
-    updatedAt: Date;
-    tags: string[];
-    hasExternalSources: boolean;
-    pinned?: boolean;
-    messages: Message[];
-  }
-  const initialChatId = Date.now().toString();
-  const [chatSessions, setChatSessions] = useState<ChatSession[]>([
-    {
-      id: initialChatId,
-      title: 'New Chat',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      tags: [],
-      hasExternalSources: false,
-      pinned: false,
-      messages: [initialMessage],
-    },
-  ]);
-  const [activeChatId, setActiveChatId] = useState<string>(initialChatId);
-  const [messages, setMessages] = useState<Message[]>([initialMessage]);
-
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const sidebarPanelRef = useRef<ImperativePanelHandle | null>(null);
   const SIDEBAR_COLLAPSED_SIZE = 6;
-  const [isDark, setIsDark] = useState(false);
-  const [chatSettingsOpen, setChatSettingsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [externalDialogOpen, setExternalDialogOpen] = useState(false);
-  const [pendingQuery, setPendingQuery] = useState('');
-  const [rightPanelOpen, setRightPanelOpen] = useState(true);
-  const [externalSources, setExternalSources] = useState<Record<'reddit' | 'stackoverflow' | 'github' | 'web', boolean>>({
-    reddit: true,
-    stackoverflow: true,
-    github: true,
-    web: true,
-  });
 
-  const displayName = profile?.full_name || profile?.username || user?.email?.split('@')[0] || 'User';
+  // Store selectors
+  const chatSessions = useAppStore((state) => state.chatSessions);
+  const activeChatId = useAppStore((state) => state.activeChatId);
+  const messages = useAppStore((state) => state.messages);
+  const isLoading = useAppStore((state) => state.isLoading);
+  const chatSettingsOpen = useAppStore((state) => state.chatSettingsOpen);
+  const externalDialogOpen = useAppStore((state) => state.externalDialogOpen);
+  const pendingQuery = useAppStore((state) => state.pendingQuery);
+  const appSettings = useAppStore((state) => state.appSettings);
+  const assistantPanel = useAppStore((state) => state.assistantPanel);
+  const storeUser = useAppStore((state) => state.user);
+
+  // Store actions
+  const setChatSessions = useAppStore((state) => state.setChatSessions);
+  const setActiveChatId = useAppStore((state) => state.setActiveChatId);
+  const setMessages = useAppStore((state) => state.setMessages);
+  const addMessage = useAppStore((state) => state.addMessage);
+  const updateChatSession = useAppStore((state) => state.updateChatSession);
+  const deleteChatSession = useAppStore((state) => state.deleteChatSession);
+  const setChatSettingsOpen = useAppStore((state) => state.setChatSettingsOpen);
+  const setExternalDialogOpen = useAppStore((state) => state.setExternalDialogOpen);
+  const setPendingQuery = useAppStore((state) => state.setPendingQuery);
+  const toggleTheme = useAppStore((state) => state.toggleTheme);
+  const toggleSidebarCollapsed = useAppStore((state) => state.toggleSidebarCollapsed);
+  const setRightPanelOpen = useAppStore((state) => state.setRightPanelOpen);
+  const addChatSession = useAppStore((state) => state.addChatSession);
+  const setAssistantPanel = useAppStore((state) => state.setAssistantPanel);
+
+  const isDark = appSettings.theme === 'dark';
+  const sidebarCollapsed = appSettings.sidebarCollapsed;
+  const rightPanelOpen = appSettings.rightPanelOpen;
+  const externalSources = assistantPanel.externalSources;
+
+  // Use store user data if available, fallback to auth profile
+  const displayName = storeUser?.full_name || profile?.full_name || storeUser?.username || profile?.username || user?.email?.split('@')[0] || 'User';
+  const userAvatar = storeUser?.avatar_url || profile?.avatar_url;
 
   const knowledgeKeywords = useMemo(
     () => [
@@ -80,6 +63,15 @@ const Index = () => {
     ],
     []
   );
+
+  // Sync sidebar collapse state with panel
+  useEffect(() => {
+    if (sidebarCollapsed && sidebarPanelRef.current) {
+      sidebarPanelRef.current.collapse();
+    } else if (!sidebarCollapsed && sidebarPanelRef.current) {
+      sidebarPanelRef.current.expand();
+    }
+  }, [sidebarCollapsed]);
 
   const generateDocsAnswer = (query: string): string => {
     return `### Answer based on Godot docs\n\nHere's a brief example using GDScript:\n\n\`\`\`language-gdscript\nextends Node\n\nfunc _ready():\n    var timer := Timer.new()\n    add_child(timer)\n    timer.wait_time = 1.0\n    timer.one_shot = true\n    timer.start()\n    timer.timeout.connect(_on_timeout)\n\nfunc _on_timeout():\n    print("Timer fired!")\n\n\`\`\`\n\n- Use signals to react to events\n- Prefer \`await\` over deprecated \`yield\` in 4.x\n\n| Concept | API |\n|--------|-----|\n| Timers | Timer |\n| Signals | .connect |\n\nIf you need a deeper dive about "${query}", let me know.`;
@@ -93,18 +85,12 @@ const Index = () => {
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
-    setChatSessions(prev => prev.map(s => s.id === activeChatId ? {
-      ...s,
-      messages: [...s.messages, userMessage],
-      updatedAt: new Date(),
-      title: s.messages.length <= 1 ? content.slice(0, 60) : s.title,
-    } : s));
+    addMessage(userMessage);
 
     const foundInDocs = knowledgeKeywords.some(k => content.toLowerCase().includes(k));
 
     if (foundInDocs) {
-      setIsLoading(true);
+      useAppStore.setState({ isLoading: true });
       setTimeout(() => {
         const aiMessage: Message = {
           id: (Date.now() + 1).toString(),
@@ -112,16 +98,10 @@ const Index = () => {
           isUser: false,
           timestamp: new Date(),
         };
-        setMessages(prev => [...prev, aiMessage]);
-        setChatSessions(prev => prev.map(s => s.id === activeChatId ? {
-          ...s,
-          messages: [...s.messages, aiMessage],
-          updatedAt: new Date(),
-        } : s));
-        setIsLoading(false);
+        addMessage(aiMessage);
+        useAppStore.setState({ isLoading: false });
       }, 800);
     } else {
-      // Not found in docs -> ask for external search approval
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         content:
@@ -129,12 +109,7 @@ const Index = () => {
         isUser: false,
         timestamp: new Date(),
       };
-      setMessages(prev => [...prev, aiMessage]);
-      setChatSessions(prev => prev.map(s => s.id === activeChatId ? {
-        ...s,
-        messages: [...s.messages, aiMessage],
-        updatedAt: new Date(),
-      } : s));
+      addMessage(aiMessage);
       setPendingQuery(content);
       setExternalDialogOpen(true);
     }
@@ -142,7 +117,7 @@ const Index = () => {
 
   const handleApproveExternal = (sources: string[]) => {
     setExternalDialogOpen(false);
-    setIsLoading(true);
+    useAppStore.setState({ isLoading: true });
     setTimeout(() => {
       const aiMessage: Message = {
         id: (Date.now() + 2).toString(),
@@ -152,21 +127,15 @@ const Index = () => {
         timestamp: new Date(),
         sources,
       };
-      setMessages(prev => [...prev, aiMessage]);
-      setChatSessions(prev => prev.map(s => s.id === activeChatId ? {
-        ...s,
-        hasExternalSources: true,
-        messages: [...s.messages, aiMessage],
-        updatedAt: new Date(),
-        tags: Array.from(new Set([...(s.tags || []), ...sources])),
-      } : s));
-      setIsLoading(false);
+      addMessage(aiMessage);
+      if (activeChatId) {
+        updateChatSession(activeChatId, {
+          hasExternalSources: true,
+          tags: Array.from(new Set([...(chatSessions.find(s => s.id === activeChatId)?.tags || []), ...sources])),
+        });
+      }
+      useAppStore.setState({ isLoading: false });
     }, 1200);
-  };
-
-  const toggleTheme = () => {
-    setIsDark(!isDark);
-    document.documentElement.classList.toggle('dark');
   };
 
   const handleNewChat = () => {
@@ -188,9 +157,8 @@ const Index = () => {
       pinned: false,
       messages: [botMsg],
     };
-    setChatSessions(prev => [newSession, ...prev]);
+    addChatSession(newSession);
     setActiveChatId(newId);
-    setMessages([botMsg]);
   };
 
   return (
@@ -203,11 +171,11 @@ const Index = () => {
           defaultSize={24}
           minSize={8}
           maxSize={40}
-          onCollapse={() => setSidebarCollapsed(true)}
-          onExpand={() => setSidebarCollapsed(false)}
+          onCollapse={() => useAppStore.setState({ appSettings: { ...appSettings, sidebarCollapsed: true } })}
+          onExpand={() => useAppStore.setState({ appSettings: { ...appSettings, sidebarCollapsed: false } })}
           onResize={(size) => {
             if (sidebarCollapsed && size > SIDEBAR_COLLAPSED_SIZE + 0.1) {
-              setSidebarCollapsed(false);
+              useAppStore.setState({ appSettings: { ...appSettings, sidebarCollapsed: false } });
               sidebarPanelRef.current?.expand();
             }
           }}
@@ -215,15 +183,7 @@ const Index = () => {
           <ChatSidebar
             isCollapsed={sidebarCollapsed}
             onToggleCollapse={() => {
-              setSidebarCollapsed((prev) => {
-                const next = !prev;
-                const ref = sidebarPanelRef.current;
-                if (ref) {
-                  if (next) ref.collapse();
-                  else ref.expand();
-                }
-                return next;
-              });
+              toggleSidebarCollapsed();
             }}
             isDark={isDark}
             onToggleTheme={toggleTheme}
@@ -231,31 +191,15 @@ const Index = () => {
             onOpenSettings={() => { }}
             chatHistory={chatSessions.map(s => ({ id: s.id, title: s.title, createdAt: s.createdAt, updatedAt: s.updatedAt, tags: s.tags, hasExternalSources: s.hasExternalSources, pinned: s.pinned }))}
             activeChatId={activeChatId}
-            onSelectChat={(id) => { setActiveChatId(id); const session = chatSessions.find(s => s.id === id); if (session) { setMessages(session.messages); } }}
+            onSelectChat={(id) => { setActiveChatId(id); }}
             onDeleteChat={(id) => {
-              setChatSessions(prev => prev.filter(s => s.id !== id));
-              if (activeChatId === id) {
-                setTimeout(() => {
-                  setChatSessions(curr => {
-                    if (curr.length > 0) {
-                      const next = curr[0];
-                      setActiveChatId(next.id);
-                      setMessages(next.messages);
-                    } else {
-                      const newId = Date.now().toString();
-                      const botMsg: Message = { id: '1', content: 'Hi! Ask me anything about the Godot docs. I can format answers with markdown, code blocks, tables, and lists. If the docs lack an answer, I can search sources like Reddit, the web, and GitHub after you approve.', isUser: false, timestamp: new Date() };
-                      const newSession = { id: newId, title: 'New Chat', createdAt: new Date(), updatedAt: new Date(), tags: [], hasExternalSources: false, pinned: false, messages: [botMsg] };
-                      setActiveChatId(newId);
-                      setMessages([botMsg]);
-                      return [newSession];
-                    }
-                    return curr;
-                  });
-                }, 0);
-              }
+              deleteChatSession(id);
             }}
             onTogglePin={(id) => {
-              setChatSessions(prev => prev.map(s => s.id === id ? { ...s, pinned: !s.pinned } : s));
+              const session = chatSessions.find(s => s.id === id);
+              if (session) {
+                updateChatSession(id, { pinned: !session.pinned });
+              }
             }}
             onOpenRightPanel={() => setRightPanelOpen(true)}
           />
@@ -271,7 +215,7 @@ const Index = () => {
               <div className="flex items-center gap-2">
                 <UserProfilePopover>
                   <Avatar className="h-8 w-8 cursor-pointer hover:opacity-80 transition-opacity">
-                    <AvatarImage src={profile?.avatar_url} />
+                    <AvatarImage src={userAvatar} />
                     <AvatarFallback>
                       {displayName?.charAt(0).toUpperCase() || 'U'}
                     </AvatarFallback>
@@ -334,7 +278,7 @@ const Index = () => {
         onOpenChange={setRightPanelOpen}
         sessionTags={(chatSessions.find(s => s.id === activeChatId)?.tags) || []}
         externalSources={externalSources}
-        onToggleSource={(k) => setExternalSources(prev => ({ ...prev, [k]: !prev[k] }))}
+        onToggleSource={(k) => setAssistantPanel({ externalSources: { ...externalSources, [k]: !externalSources[k as keyof typeof externalSources] } })}
       />
     </div>
   );
