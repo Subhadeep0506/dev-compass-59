@@ -1,18 +1,22 @@
-import React, { useMemo, useRef, useEffect } from 'react';
-import { ChatSidebar } from '@/components/ChatSidebar';
-import { ChatMessage } from '@/components/ChatMessage';
-import { ChatInput } from '@/components/ChatInput';
-import { UserProfilePopover } from '@/components/UserProfilePopover';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useAuth } from '@/hooks/useAuth';
-import { SettingsDialog } from '@/components/SettingsDialog';
-import { ExternalSourceDialog } from '@/components/ExternalSourceDialog';
-import { RightPanel } from '@/components/RightPanel';
-import { Button } from '@/components/ui/button';
-import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
-import { ImperativePanelHandle } from 'react-resizable-panels';
-import { useAppStore } from '@/store';
-import { ChatSession, Message } from '@/store/types';
+import React, { useMemo, useRef, useEffect } from "react";
+import { ChatSidebar } from "@/components/ChatSidebar";
+import { ChatMessage } from "@/components/ChatMessage";
+import { ChatInput } from "@/components/ChatInput";
+import { UserProfilePopover } from "@/components/UserProfilePopover";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuth } from "@/hooks/useAuth";
+import { SettingsDialog } from "@/components/SettingsDialog";
+import { ExternalSourceDialog } from "@/components/ExternalSourceDialog";
+import { RightPanel } from "@/components/RightPanel";
+import { Button } from "@/components/ui/button";
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from "@/components/ui/resizable";
+import { ImperativePanelHandle } from "react-resizable-panels";
+import { useAppStore } from "@/store";
+import { ChatSession, Message } from "@/store/types";
 
 const Index = () => {
   const { user, profile } = useAuth();
@@ -39,27 +43,51 @@ const Index = () => {
   const updateChatSession = useAppStore((state) => state.updateChatSession);
   const deleteChatSession = useAppStore((state) => state.deleteChatSession);
   const setChatSettingsOpen = useAppStore((state) => state.setChatSettingsOpen);
-  const setExternalDialogOpen = useAppStore((state) => state.setExternalDialogOpen);
+  const setExternalDialogOpen = useAppStore(
+    (state) => state.setExternalDialogOpen
+  );
   const setPendingQuery = useAppStore((state) => state.setPendingQuery);
   const toggleTheme = useAppStore((state) => state.toggleTheme);
-  const toggleSidebarCollapsed = useAppStore((state) => state.toggleSidebarCollapsed);
+  const toggleSidebarCollapsed = useAppStore(
+    (state) => state.toggleSidebarCollapsed
+  );
   const setRightPanelOpen = useAppStore((state) => state.setRightPanelOpen);
   const addChatSession = useAppStore((state) => state.addChatSession);
   const setAssistantPanel = useAppStore((state) => state.setAssistantPanel);
 
-  const isDark = appSettings.theme === 'dark';
+  const isDark = appSettings.theme === "dark";
   const sidebarCollapsed = appSettings.sidebarCollapsed;
   const rightPanelOpen = appSettings.rightPanelOpen;
   const externalSources = assistantPanel.externalSources;
 
   // Use store user data if available, fallback to auth profile
-  const displayName = storeUser?.full_name || profile?.full_name || storeUser?.username || profile?.username || user?.email?.split('@')[0] || 'User';
+  const displayName =
+    storeUser?.full_name ||
+    profile?.full_name ||
+    storeUser?.username ||
+    profile?.username ||
+    user?.email?.split("@")[0] ||
+    "User";
   const userAvatar = storeUser?.avatar_url || profile?.avatar_url;
 
   const knowledgeKeywords = useMemo(
     () => [
-      'godot', 'gdscript', 'node', 'scene', 'signals', 'animation', 'physics', 'input',
-      'sprite', 'characterbody', 'raycast', 'area', 'tilemap', 'http', 'yield', 'await'
+      "godot",
+      "gdscript",
+      "node",
+      "scene",
+      "signals",
+      "animation",
+      "physics",
+      "input",
+      "sprite",
+      "characterbody",
+      "raycast",
+      "area",
+      "tilemap",
+      "http",
+      "yield",
+      "await",
     ],
     []
   );
@@ -87,7 +115,9 @@ const Index = () => {
 
     addMessage(userMessage);
 
-    const foundInDocs = knowledgeKeywords.some(k => content.toLowerCase().includes(k));
+    const foundInDocs = knowledgeKeywords.some((k) =>
+      content.toLowerCase().includes(k)
+    );
 
     if (foundInDocs) {
       useAppStore.setState({ isLoading: true });
@@ -121,8 +151,11 @@ const Index = () => {
     setTimeout(() => {
       const aiMessage: Message = {
         id: (Date.now() + 2).toString(),
-        content:
-          `Searching ${sources.join(', ')}...\n\nHere are summarized findings:\n\n- Community tips suggest verifying your project uses Godot 4.x APIs.\n- GitHub issues often point to using signals over polling.\n\n\`\`\`language-gdscript\n# Example adjustment\n@onready var body: CharacterBody2D = $CharacterBody2D\n\nfunc _physics_process(delta):\n    var input := Vector2.ZERO\n    input.x = Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left")\n    body.velocity.x = input.x * 200\n    body.move_and_slide()\n\n\`\`\`\n\nIf this helps, I can gather links from ${sources.join(', ')}.`,
+        content: `Searching ${sources.join(
+          ", "
+        )}...\n\nHere are summarized findings:\n\n- Community tips suggest verifying your project uses Godot 4.x APIs.\n- GitHub issues often point to using signals over polling.\n\n\`\`\`gdscript\n# Example adjustment\n@onready var body: CharacterBody2D = $CharacterBody2D\n\nfunc _physics_process(delta):\n    var input := Vector2.ZERO\n    input.x = Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left")\n    body.velocity.x = input.x * 200\n    body.move_and_slide()\n\n\`\`\`\n\nIf this helps, I can gather links from ${sources.join(
+          ", "
+        )}.`,
         isUser: false,
         timestamp: new Date(),
         sources,
@@ -131,7 +164,12 @@ const Index = () => {
       if (activeChatId) {
         updateChatSession(activeChatId, {
           hasExternalSources: true,
-          tags: Array.from(new Set([...(chatSessions.find(s => s.id === activeChatId)?.tags || []), ...sources])),
+          tags: Array.from(
+            new Set([
+              ...(chatSessions.find((s) => s.id === activeChatId)?.tags || []),
+              ...sources,
+            ])
+          ),
         });
       }
       useAppStore.setState({ isLoading: false });
@@ -141,15 +179,15 @@ const Index = () => {
   const handleNewChat = () => {
     const newId = Date.now().toString();
     const botMsg: Message = {
-      id: '1',
+      id: "1",
       content:
-        'Hi! Ask me anything about the Godot docs. I can format answers with markdown, code blocks, tables, and lists. If the docs lack an answer, I can search sources like Reddit, the web, and GitHub after you approve.',
+        "Hi! Ask me anything about the Godot docs. I can format answers with markdown, code blocks, tables, and lists. If the docs lack an answer, I can search sources like Reddit, the web, and GitHub after you approve.",
       isUser: false,
       timestamp: new Date(),
     };
     const newSession: ChatSession = {
       id: newId,
-      title: 'New Chat',
+      title: "New Chat",
       createdAt: new Date(),
       updatedAt: new Date(),
       tags: [],
@@ -168,14 +206,24 @@ const Index = () => {
           ref={sidebarPanelRef}
           collapsible
           collapsedSize={SIDEBAR_COLLAPSED_SIZE}
-          defaultSize={24}
+          defaultSize={12}
           minSize={8}
-          maxSize={40}
-          onCollapse={() => useAppStore.setState({ appSettings: { ...appSettings, sidebarCollapsed: true } })}
-          onExpand={() => useAppStore.setState({ appSettings: { ...appSettings, sidebarCollapsed: false } })}
+          maxSize={24}
+          onCollapse={() =>
+            useAppStore.setState({
+              appSettings: { ...appSettings, sidebarCollapsed: true },
+            })
+          }
+          onExpand={() =>
+            useAppStore.setState({
+              appSettings: { ...appSettings, sidebarCollapsed: false },
+            })
+          }
           onResize={(size) => {
-            if (sidebarCollapsed && size > SIDEBAR_COLLAPSED_SIZE + 0.1) {
-              useAppStore.setState({ appSettings: { ...appSettings, sidebarCollapsed: false } });
+            if (sidebarCollapsed && size > SIDEBAR_COLLAPSED_SIZE + 0.2) {
+              useAppStore.setState({
+                appSettings: { ...appSettings, sidebarCollapsed: false },
+              });
               sidebarPanelRef.current?.expand();
             }
           }}
@@ -188,15 +236,25 @@ const Index = () => {
             isDark={isDark}
             onToggleTheme={toggleTheme}
             onNewChat={handleNewChat}
-            onOpenSettings={() => { }}
-            chatHistory={chatSessions.map(s => ({ id: s.id, title: s.title, createdAt: s.createdAt, updatedAt: s.updatedAt, tags: s.tags, hasExternalSources: s.hasExternalSources, pinned: s.pinned }))}
+            onOpenSettings={() => {}}
+            chatHistory={chatSessions.map((s) => ({
+              id: s.id,
+              title: s.title,
+              createdAt: s.createdAt,
+              updatedAt: s.updatedAt,
+              tags: s.tags,
+              hasExternalSources: s.hasExternalSources,
+              pinned: s.pinned,
+            }))}
             activeChatId={activeChatId}
-            onSelectChat={(id) => { setActiveChatId(id); }}
+            onSelectChat={(id) => {
+              setActiveChatId(id);
+            }}
             onDeleteChat={(id) => {
               deleteChatSession(id);
             }}
             onTogglePin={(id) => {
-              const session = chatSessions.find(s => s.id === id);
+              const session = chatSessions.find((s) => s.id === id);
               if (session) {
                 updateChatSession(id, { pinned: !session.pinned });
               }
@@ -205,7 +263,7 @@ const Index = () => {
           />
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={76} minSize={40}>
+        <ResizablePanel defaultSize={30} minSize={40}>
           <div className="h-full flex flex-col relative">
             {/* Header */}
             <div className="h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-6">
@@ -217,7 +275,7 @@ const Index = () => {
                   <Avatar className="h-8 w-8 cursor-pointer hover:opacity-80 transition-opacity">
                     <AvatarImage src={userAvatar} />
                     <AvatarFallback>
-                      {displayName?.charAt(0).toUpperCase() || 'U'}
+                      {displayName?.charAt(0).toUpperCase() || "U"}
                     </AvatarFallback>
                   </Avatar>
                 </UserProfilePopover>
@@ -233,7 +291,7 @@ const Index = () => {
                     message={{
                       id: message.id,
                       content: message.content,
-                      sender: message.isUser ? 'user' : 'bot',
+                      sender: message.isUser ? "user" : "bot",
                       timestamp: message.timestamp,
                       sources: message.sources,
                     }}
@@ -265,20 +323,36 @@ const Index = () => {
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>
-      <SettingsDialog open={chatSettingsOpen} onOpenChange={setChatSettingsOpen} title="Chat Settings" description="Customize how the assistant responds." />
+      <SettingsDialog
+        open={chatSettingsOpen}
+        onOpenChange={setChatSettingsOpen}
+        title="Chat Settings"
+        description="Customize how the assistant responds."
+      />
       <ExternalSourceDialog
         open={externalDialogOpen}
         onOpenChange={setExternalDialogOpen}
         onApprove={handleApproveExternal}
         query={pendingQuery}
-        defaultSelectedSources={Object.entries(externalSources).filter(([, v]) => v).map(([k]) => k as any)}
+        defaultSelectedSources={Object.entries(externalSources)
+          .filter(([, v]) => v)
+          .map(([k]) => k as keyof typeof externalSources as string)}
       />
       <RightPanel
         open={rightPanelOpen}
         onOpenChange={setRightPanelOpen}
-        sessionTags={(chatSessions.find(s => s.id === activeChatId)?.tags) || []}
+        sessionTags={
+          chatSessions.find((s) => s.id === activeChatId)?.tags || []
+        }
         externalSources={externalSources}
-        onToggleSource={(k) => setAssistantPanel({ externalSources: { ...externalSources, [k]: !externalSources[k as keyof typeof externalSources] } })}
+        onToggleSource={(k) =>
+          setAssistantPanel({
+            externalSources: {
+              ...externalSources,
+              [k]: !externalSources[k as keyof typeof externalSources],
+            },
+          })
+        }
       />
     </div>
   );

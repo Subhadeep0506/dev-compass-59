@@ -63,7 +63,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] p-0">
-        <DialogHeader className="p-6 pb-4">
+        <DialogHeader className="p-6 pb-0">
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
             {description}
@@ -71,7 +71,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
         </DialogHeader>
 
         <ScrollArea className="max-h-[60vh] px-6">
-          <div className="space-y-6 pb-6">
+          <div className="space-y-3 px-2 pb-3">
             {/* Model Selection */}
             <div className="space-y-3">
               <Label className="text-base font-semibold">Model Selection</Label>
@@ -133,7 +133,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                 onValueChange={(value) => setSettings({ ...settings, topP: value[0] })}
                 max={1}
                 min={0}
-                step={0.05}
+                step={0.01}
                 className="w-full"
               />
               <div className="flex justify-between text-xs text-muted-foreground">
@@ -200,7 +200,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
           </div>
         </ScrollArea>
 
-        <div className="flex justify-between p-6 pt-4 bg-muted/30 rounded-b-lg">
+        <div className="flex justify-between p-3 pt-0 bg-muted/30 rounded-b-lg">
           <Button variant="outline" onClick={handleReset}>
             Reset to Defaults
           </Button>

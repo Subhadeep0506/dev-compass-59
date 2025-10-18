@@ -6,7 +6,7 @@ import {
   Moon,
   Sun,
   Plus,
-  MoreHorizontal,
+  Sidebar,
   Globe,
   Hash,
   Clock,
@@ -80,7 +80,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
       "w-full"
     )}>
       {/* Header */}
-      <div className="p-4 border-b border-sidebar-border">
+      <div className="p-2 border-b border-sidebar-border">
         <div className={`flex items-center ${isCollapsed ? "justify-center" : "justify-between"}`}>
           {!isCollapsed && (
             <h1 className="font-semibold text-sidebar-foreground">ChatBot UI</h1>
@@ -93,7 +93,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             title={isCollapsed ? "Expand" : "Collapse"}
           >
-            <MoreHorizontal className="w-4 h-4" />
+            <Sidebar className="w-4 h-4" />
           </Button>
         </div>
 

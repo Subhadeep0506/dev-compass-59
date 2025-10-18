@@ -17,31 +17,33 @@
     --background: 0 0% 100%;
     --foreground: 220 14% 8%;
 
-    /* Chat UI Colors */
-    --chat-bg: 0 0% 98%;
-    --chat-header: 0 0% 100%;
-    --chat-input: 0 0% 100%;
-    --chat-bubble-user: 266 85% 58%;
-    --chat-bubble-user-foreground: 0 0% 100%;
-    --chat-bubble-bot: 0 0% 100%;
-    --chat-bubble-bot-foreground: 220 14% 8%;
+  /* Chat UI Colors */
+  --chat-bg: 0 0% 98%;
+  --chat-header: 0 0% 100%;
+  --chat-input: 0 0% 100%;
+  --chat-bubble-user: 207 65% 54%;
+  --chat-bubble-user-foreground: 0 0% 100%;
+  --chat-bubble-bot: 0 0% 100%;
+  --chat-bubble-bot-foreground: 220 14% 8%;
 
     /* Sidebar Colors */
     --sidebar-bg: 0 0% 100%;
     --sidebar-item-hover: 0 0% 96%;
-    --sidebar-item-active: 266 85% 95%;
+  --sidebar-item-active: 207 65% 95%;
     --sidebar-border: 220 13% 91%;
 
-    /* Component Colors */
-    --card: 0 0% 100%;
+  /* Component Colors */
+  /* Use a slightly darker card tone for all card/code surfaces */
+    --card: 0 0% 96%;
+    --code-block: #e6e6e6;
     --card-foreground: 220 14% 8%;
     --popover: 0 0% 100%;
     --popover-foreground: 220 14% 8%;
 
-    /* Primary Brand */
-    --primary: 266 85% 58%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 266 100% 70%;
+  /* Primary Brand */
+  --primary: 207 65% 54%;
+  --primary-foreground: 0 0% 100%;
+  --primary-glow: 205 82% 67%;
 
     /* Secondary */
     --secondary: 0 0% 96%;
@@ -50,8 +52,8 @@
     /* Muted & Accent */
     --muted: 0 0% 96%;
     --muted-foreground: 220 8% 46%;
-    --accent: 266 85% 95%;
-    --accent-foreground: 266 85% 20%;
+  --accent: 207 65% 95%;
+  --accent-foreground: 207 65% 20%;
 
     /* Status Colors */
     --destructive: 0 84% 60%;
@@ -64,17 +66,17 @@
     /* Interactive Elements */
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 266 85% 58%;
+  --ring: 207 65% 54%;
 
     /* Design Tokens */
     --radius: 0.5rem;
     --gradient-primary: linear-gradient(
       135deg,
-      hsl(266 85% 58%),
-      hsl(266 100% 70%)
+      hsl(207 65% 54%),
+      hsl(205 82% 67%)
     );
     --gradient-sidebar: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 98%));
-    --shadow-elegant: 0 10px 30px -10px hsl(266 85% 58% / 0.1);
+  --shadow-elegant: 0 10px 30px -10px hsl(207 65% 54% / 0.1);
     --shadow-chat: 0 2px 8px hsl(220 14% 8% / 0.08);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -92,7 +94,7 @@
 
     --sidebar-border: 220 13% 91%;
 
-    --sidebar-ring: 217.2 91.2% 59.8%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
@@ -104,7 +106,7 @@
     --chat-bg: 224 71% 4%;
     --chat-header: 222 84% 5%;
     --chat-input: 222 84% 5%;
-    --chat-bubble-user: 266 85% 58%;
+  --chat-bubble-user: 207 65% 54%;
     --chat-bubble-user-foreground: 0 0% 100%;
     --chat-bubble-bot: 222 84% 5%;
     --chat-bubble-bot-foreground: 210 40% 98%;
@@ -112,21 +114,19 @@
     /* Sidebar Colors */
     --sidebar-bg: 222 84% 5%;
     --sidebar-item-hover: 215 28% 17%;
-    --sidebar-item-active: 266 85% 15%;
+  --sidebar-item-active: 207 65% 15%;
     --sidebar-border: 215 28% 17%;
 
     /* Component Colors */
     --card: 222 84% 5%;
     --card-foreground: 210 40% 98%;
-    --popover:"font_size_sm": 11,
-		"font_size": 12,
-		"font_size_lg": 13, 222 84% 5%;
+    --popover: 222 84% 5%;
     --popover-foreground: 210 40% 98%;
 
-    /* Primary Brand */
-    --primary: 266 85% 58%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 266 100% 70%;
+  /* Primary Brand */
+  --primary: 207 65% 54%;
+  --primary-foreground: 0 0% 100%;
+  --primary-glow: 205 82% 67%;
 
     /* Secondary */
     --secondary: 215 28% 17%;
@@ -135,8 +135,8 @@
     /* Muted & Accent */
     --muted: 215 28% 17%;
     --muted-foreground: 217 10% 65%;
-    --accent: 266 85% 15%;
-    --accent-foreground: 266 85% 80%;
+  --accent: 207 65% 15%;
+  --accent-foreground: 207 65% 80%;
 
     /* Status Colors */
     --destructive: 0 63% 31%;
@@ -149,20 +149,20 @@
     /* Interactive Elements */
     --border: 215 28% 17%;
     --input: 215 28% 17%;
-    --ring: 266 85% 58%;
+  --ring: 207 65% 54%;
 
     /* Design Tokens */
     --gradient-primary: linear-gradient(
       135deg,
-      hsl(266 85% 58%),
-      hsl(266 100% 70%)
+      hsl(207 65% 54%),
+      hsl(205 82% 67%)
     );
     --gradient-sidebar: linear-gradient(
       180deg,
       hsl(222 84% 5%),
       hsl(224 71% 4%)
     );
-    --shadow-elegant: 0 10px 30px -10px hsl(266 85% 58% / 0.2);
+  --shadow-elegant: 0 10px 30px -10px hsl(207 65% 54% / 0.2);
     --shadow-chat: 0 2px 8px hsl(0 0% 0% / 0.3);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -213,42 +213,96 @@
 
   /* Code Block Styling */
   .code-block {
-    @apply rounded-lg overflow-hidden;
+    border-radius: 0.1rem;
+    overflow: hidden;
+    background: hsl(var(--card)) !important;
+    margin: 0;
+    padding: 0 !important;
   }
 
   .code-block pre {
-    @apply m-0 p-4 overflow-x-auto text-sm;
-    background: hsl(var(--muted)) !important;
+    overflow-x: auto;
+    font-size: 0.7rem;
+    background: hsl(var(--card)) !important;
+    border: 1px solid hsl(var(--border) / 0.6);
+  }
+
+  /* Ensure inner elements rendered by the syntax highlighter don't draw their own
+     backgrounds or shadows that hide the card background (some themes add inline styles). */
+  .code-block pre * {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  /* Keep the code text color and token colors intact, but ensure code element itself doesn't override background */
+  .code-block pre code {
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block;
   }
 
   .dark .code-block pre {
-    background: hsl(var(--border)) !important;
+    background: hsl(var(--card)) !important;
+    border: 1px solid hsl(var(--border) / 0.12);
   }
 
-  /* Message Content Styling */
+  /* Message Content Styling - compact and transparent to avoid background boxes from prose */
   .message-content {
     @apply text-sm leading-relaxed;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Override tailwind-typography default spacing inside message bubbles */
+  .message-content > :where(p,ul,ol,pre,blockquote,table) {
+    margin-top: 0 !important;
+    margin-bottom: 0.5rem !important;
   }
 
   .message-content p {
-    @apply mb-3 last:mb-0 leading-relaxed;
+    margin: 0 0 0.5rem 0 !important;
+    line-height: 1.45 !important;
   }
 
   .message-content ul,
   .message-content ol {
-    @apply mb-3 pl-4;
+    margin: 0 0 0.5rem 0 !important;
+    padding-left: 1rem !important;
   }
 
   .message-content li {
-    @apply mb-1;
+    margin-bottom: 0.25rem !important;
   }
 
   .message-content code:not(pre code) {
-    @apply bg-muted px-1.5 py-0.5 rounded text-sm font-mono;
+    /* padding: 0.12rem 0.4rem !important; */
+    border-radius: 6px !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Segoe UI Mono", "Oxygen";
+    /* font-size: 0.9rem !important; */
   }
 
   .message-content blockquote {
-    @apply border-l-4 border-primary pl-4 italic;
+    margin: 0 0 0.5rem 0 !important;
+    padding-left: 0.75rem !important;
+    border-left: 4px solid hsl(var(--primary));
+    font-style: italic;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .message-content pre {
+    background: transparent !important;
+    padding: 8px !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .message-content pre > code {
+    background: transparent !important;
+    padding: 0 !important;
+    display: block;
+    color: inherit !important;
   }
 
   .glass-effect {
