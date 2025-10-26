@@ -1,19 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { useAppStore } from "@/store";
 
 interface SettingsDialogProps {
   open: boolean;
@@ -25,38 +32,81 @@ interface SettingsDialogProps {
 interface Settings {
   model: string;
   temperature: number;
-  topP: number;
-  maxTokens: number;
+  topK: number;
+  memoryService: string;
+  category: string;
+  subCategory: string;
   redditUsername: string;
+  relevance: string;
 }
 
 export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   open,
   onOpenChange,
-  title = "Settings",
-  description = "Manage your preferences and settings."
+  title = "Chat Settings",
+  description = "Customize how the assistant responds and searches external sources.",
 }) => {
+  // Get current settings from store
+  const chatSettings = useAppStore((state) => state.chatSettings);
+  const setChatSettings = useAppStore((state) => state.setChatSettings);
+
   const [settings, setSettings] = useState<Settings>({
-    model: 'gpt-4',
+    model: "codestral-latest",
     temperature: 0.7,
-    topP: 0.9,
-    maxTokens: 2048,
-    redditUsername: '',
+    topK: 5,
+    memoryService: "astradb",
+    category: "tutorials",
+    subCategory: "tutorials",
+    redditUsername: "",
+    relevance: "top",
   });
 
+  // Load current settings from store when dialog opens
+  useEffect(() => {
+    if (open && chatSettings.querySettings) {
+      setSettings({
+        model: chatSettings.querySettings.model,
+        temperature: chatSettings.querySettings.temperature,
+        topK: chatSettings.querySettings.topK,
+        memoryService: chatSettings.querySettings.memoryService,
+        category: chatSettings.querySettings.category,
+        subCategory: chatSettings.querySettings.subCategory,
+        redditUsername: chatSettings.querySettings.redditUsername,
+        relevance: chatSettings.querySettings.relevance,
+      });
+    }
+  }, [open, chatSettings.querySettings]);
+
   const handleSave = () => {
-    // TODO: Implement settings save logic
-    console.log('Saving settings:', settings);
+    // Update the store with new settings
+    setChatSettings({
+      ...chatSettings,
+      querySettings: {
+        model: settings.model,
+        temperature: settings.temperature,
+        topK: settings.topK,
+        memoryService: settings.memoryService,
+        category: settings.category,
+        subCategory: settings.subCategory,
+        redditUsername: settings.redditUsername,
+        relevance: settings.relevance,
+      },
+    });
+
+    console.log("Saved settings:", settings);
     onOpenChange(false);
   };
 
   const handleReset = () => {
     setSettings({
-      model: 'gpt-4',
+      model: "codestral-latest",
       temperature: 0.7,
-      topP: 0.9,
-      maxTokens: 2048,
-      redditUsername: '',
+      topK: 5,
+      memoryService: "astradb",
+      category: "tutorials",
+      subCategory: "tutorials",
+      redditUsername: "",
+      relevance: "top",
     });
   };
 
@@ -65,9 +115,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
       <DialogContent className="max-w-2xl max-h-[90vh] p-0">
         <DialogHeader className="p-6 pb-0">
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>
-            {description}
-          </DialogDescription>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
         <ScrollArea className="max-h-[60vh] px-6">
@@ -77,17 +125,21 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
               <Label className="text-base font-semibold">Model Selection</Label>
               <Select
                 value={settings.model}
-                onValueChange={(value) => setSettings({ ...settings, model: value })}
+                onValueChange={(value) =>
+                  setSettings({ ...settings, model: value })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a model" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="gpt-4">GPT-4</SelectItem>
+                  <SelectItem value="codestral-latest">
+                    Codestral Latest
+                  </SelectItem>
+                  <SelectItem value="gpt-4o-mini">GPT-4o Mini</SelectItem>
+                  <SelectItem value="gpt-4o">GPT-4o</SelectItem>
                   <SelectItem value="gpt-4-turbo">GPT-4 Turbo</SelectItem>
                   <SelectItem value="gpt-3.5-turbo">GPT-3.5 Turbo</SelectItem>
-                  <SelectItem value="claude-3">Claude 3</SelectItem>
-                  <SelectItem value="gemini-pro">Gemini Pro</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -101,11 +153,14 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                 <Badge variant="secondary">{settings.temperature}</Badge>
               </div>
               <p className="text-sm text-muted-foreground">
-                Controls randomness in responses. Lower values make responses more focused and deterministic.
+                Controls randomness in responses. Lower values make responses
+                more focused and deterministic.
               </p>
               <Slider
                 value={[settings.temperature]}
-                onValueChange={(value) => setSettings({ ...settings, temperature: value[0] })}
+                onValueChange={(value) =>
+                  setSettings({ ...settings, temperature: value[0] })
+                }
                 max={2}
                 min={0}
                 step={0.1}
@@ -119,76 +174,173 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
 
             <Separator />
 
-            {/* Top P */}
+            {/* Top K */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <Label className="text-base font-semibold">Top P</Label>
-                <Badge variant="secondary">{settings.topP}</Badge>
+                <Label className="text-base font-semibold">Top K</Label>
+                <Badge variant="secondary">{settings.topK}</Badge>
               </div>
               <p className="text-sm text-muted-foreground">
-                Controls diversity of responses via nucleus sampling. Lower values reduce randomness.
+                Number of top results to consider for answer generation. Higher
+                values provide more context.
               </p>
               <Slider
-                value={[settings.topP]}
-                onValueChange={(value) => setSettings({ ...settings, topP: value[0] })}
-                max={1}
-                min={0}
-                step={0.01}
+                value={[settings.topK]}
+                onValueChange={(value) =>
+                  setSettings({ ...settings, topK: value[0] })
+                }
+                max={20}
+                min={1}
+                step={1}
                 className="w-full"
               />
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Focused (0)</span>
-                <span>Diverse (1)</span>
+                <span>Precise (1)</span>
+                <span>Comprehensive (20)</span>
               </div>
             </div>
 
             <Separator />
 
-            {/* Max Tokens */}
+            {/* Memory Service */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label className="text-base font-semibold">Max Tokens</Label>
-                <Badge variant="secondary">{settings.maxTokens}</Badge>
-              </div>
+              <Label className="text-base font-semibold">Memory Service</Label>
               <p className="text-sm text-muted-foreground">
-                Maximum length of the response. Higher values allow longer responses.
+                Choose the memory service for storing conversation context.
               </p>
-              <Slider
-                value={[settings.maxTokens]}
-                onValueChange={(value) => setSettings({ ...settings, maxTokens: value[0] })}
-                max={4096}
-                min={256}
-                step={256}
-                className="w-full"
-              />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Short (256)</span>
-                <span>Long (4096)</span>
-              </div>
+              <Select
+                value={settings.memoryService}
+                onValueChange={(value) =>
+                  setSettings({ ...settings, memoryService: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select memory service" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="astradb">AstraDB</SelectItem>
+                  <SelectItem value="default">Default</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Separator />
+
+            {/* Category */}
+            <div className="space-y-3">
+              <Label className="text-base font-semibold">Category</Label>
+              <p className="text-sm text-muted-foreground">
+                Select the documentation category to focus search on.
+              </p>
+              <Select
+                value={settings.category}
+                onValueChange={(value) =>
+                  setSettings({ ...settings, category: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="tutorials">Tutorials</SelectItem>
+                  <SelectItem value="classes">Classes</SelectItem>
+                  <SelectItem value="getting_started">
+                    Getting Started
+                  </SelectItem>
+                  <SelectItem value="engine_details">Engine Details</SelectItem>
+                  <SelectItem value="about">About</SelectItem>
+                  <SelectItem value="community">Community</SelectItem>
+                  <SelectItem value="None">None (All Categories)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Separator />
+
+            {/* Sub-Category */}
+            <div className="space-y-3">
+              <Label className="text-base font-semibold">Sub-Category</Label>
+              <p className="text-sm text-muted-foreground">
+                Select a specific sub-category for more focused results.
+              </p>
+              <Select
+                value={settings.subCategory}
+                onValueChange={(value) =>
+                  setSettings({ ...settings, subCategory: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select sub-category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="tutorials">Tutorials</SelectItem>
+                  <SelectItem value="classes">Classes</SelectItem>
+                  <SelectItem value="getting_started">
+                    Getting Started
+                  </SelectItem>
+                  <SelectItem value="engine_details">Engine Details</SelectItem>
+                  <SelectItem value="about">About</SelectItem>
+                  <SelectItem value="community">Community</SelectItem>
+                  <SelectItem value="None">
+                    None (All Sub-Categories)
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <Separator />
 
             {/* Reddit Integration */}
             <div className="space-y-3">
-              <Label className="text-base font-semibold">Reddit Integration</Label>
+              <Label className="text-base font-semibold">
+                Reddit Integration
+              </Label>
               <p className="text-sm text-muted-foreground">
-                Enter your Reddit username to personalize external source searches.
+                Configure Reddit search parameters for external source searches.
               </p>
-              <Input
-                value={settings.redditUsername}
-                onChange={(e) => setSettings({ ...settings, redditUsername: e.target.value })}
-                placeholder="Enter Reddit username (optional)"
-              />
+
+              <div className="space-y-2">
+                <Label className="text-sm">Reddit Username (optional)</Label>
+                <Input
+                  value={settings.redditUsername}
+                  onChange={(e) =>
+                    setSettings({ ...settings, redditUsername: e.target.value })
+                  }
+                  placeholder="Enter Reddit username"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm">Search Relevance</Label>
+                <Select
+                  value={settings.relevance}
+                  onValueChange={(value) =>
+                    setSettings({ ...settings, relevance: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select relevance" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="top">Top Posts</SelectItem>
+                    <SelectItem value="hot">Hot Posts</SelectItem>
+                    <SelectItem value="new">New Posts</SelectItem>
+                    <SelectItem value="rising">Rising Posts</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <Separator />
 
             {/* External Sources */}
             <div className="space-y-3">
-              <Label className="text-base font-semibold">External Sources</Label>
+              <Label className="text-base font-semibold">
+                External Sources
+              </Label>
               <p className="text-sm text-muted-foreground">
-                When the chatbot can't answer your question, it will prompt to search these sources:
+                When the chatbot can't answer your question, it will prompt to
+                search these sources:
               </p>
               <div className="flex flex-wrap gap-2">
                 <Badge>Reddit</Badge>

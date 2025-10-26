@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from "react";
 import {
   MessageSquare,
   User,
@@ -11,17 +11,31 @@ import {
   Hash,
   Clock,
   Trash2,
-  SlidersHorizontal
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { UserProfilePopover } from '@/components/UserProfilePopover';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { useAuth } from '@/hooks/useAuth';
-import { useAppStore } from '@/store';
-import { cn } from '@/lib/utils';
+  SlidersHorizontal,
+  Edit2,
+  Check,
+  X,
+  Loader2,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { UserProfilePopover } from "@/components/UserProfilePopover";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useAuth } from "@/hooks/useAuth";
+import { useAppStore } from "@/store";
+import { cn } from "@/lib/utils";
 
 interface ChatHistory {
   id: string;
@@ -43,9 +57,11 @@ interface ChatSidebarProps {
   chatHistory: ChatHistory[];
   activeChatId?: string;
   onSelectChat: (chatId: string) => void;
-  onDeleteChat: (chatId: string) => void;
+  // onDeleteChat may perform async work (call API). Support returning a Promise.
+  onDeleteChat: (chatId: string) => Promise<void> | void;
   onTogglePin: (chatId: string) => void;
   onOpenRightPanel: () => void;
+  isLoading?: boolean;
 }
 
 export const ChatSidebar: React.FC<ChatSidebarProps> = ({
@@ -61,29 +77,48 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
   onDeleteChat,
   onTogglePin,
   onOpenRightPanel,
+  isLoading = false,
 }) => {
   const { user, profile } = useAuth();
   const storeUser = useAppStore((state) => state.user);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingTitle, setEditingTitle] = useState<string>("");
+  const [savingId, setSavingId] = useState<string | null>(null);
 
   // Use store user data if available, fallback to auth profile
-  const displayName = storeUser?.full_name || profile?.full_name || storeUser?.username || profile?.username || user?.email?.split('@')[0] || 'User';
+  const displayName =
+    storeUser?.full_name ||
+    profile?.full_name ||
+    storeUser?.username ||
+    profile?.username ||
+    user?.email?.split("@")[0] ||
+    "User";
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
-    return chatHistory.filter(c => c.title.toLowerCase().includes(q));
+    return chatHistory.filter((c) => c.title.toLowerCase().includes(q));
   }, [chatHistory, query]);
-  const pinned = filtered.filter(c => c.pinned);
-  const recent = filtered.filter(c => !c.pinned);
+  const pinned = filtered.filter((c) => c.pinned);
+  const recent = filtered.filter((c) => !c.pinned);
   return (
-    <div className={cn(
-      "bg-sidebar border-r border-sidebar-border flex flex-col h-full transition-all duration-300",
-      "w-full"
-    )}>
+    <div
+      className={cn(
+        "bg-sidebar border-r border-sidebar-border flex flex-col h-full transition-all duration-300",
+        "w-full"
+      )}
+    >
       {/* Header */}
       <div className="p-2 border-b border-sidebar-border">
-        <div className={`flex items-center ${isCollapsed ? "justify-center" : "justify-between"}`}>
+        <div
+          className={`flex items-center ${
+            isCollapsed ? "justify-center" : "justify-between"
+          }`}
+        >
           {!isCollapsed && (
-            <h1 className="font-semibold text-sidebar-foreground">ChatBot UI</h1>
+            <h1 className="font-semibold text-sidebar-foreground">
+              ChatBot UI
+            </h1>
           )}
           <Button
             variant="ghost"
@@ -109,7 +144,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
             <div className="mt-3">
               <input
                 value={query}
-                onChange={e => setQuery(e.target.value)}
+                onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search chats"
                 className="w-full h-9 rounded-md border bg-background px-3 text-sm"
               />
@@ -140,119 +175,400 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
       {!isCollapsed && (
         <div className="flex-1 flex flex-col min-h-0">
           <div className="p-4 pb-2">
-            <h2 className="text-sm font-medium text-sidebar-foreground mb-2">Pinned</h2>
+            <h2 className="text-sm font-medium text-sidebar-foreground mb-2">
+              Pinned
+            </h2>
           </div>
           <ScrollArea className="max-h-40 px-2">
             <div className="space-y-2 p-2">
-              {pinned.length === 0 && (
-                <div className="text-xs text-muted-foreground px-2">No pinned chats</div>
-              )}
-              {pinned.map((chat) => (
-                <div key={chat.id} className={cn(
-                  'w-full p-3 rounded-lg text-left transition-colors group',
-                  'hover:bg-sidebar-item-hover',
-                  activeChatId === chat.id ? 'bg-sidebar-item-active text-sidebar-accent-foreground' : 'text-sidebar-foreground'
-                )} onClick={() => onSelectChat(chat.id)}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <MessageSquare className="w-4 h-4 flex-shrink-0" />
-                      <h3 className="font-medium truncate text-sm">{chat.title}</h3>
-                    </div>
-                    <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); onTogglePin(chat.id); }} title="Unpin">
-                      ★
-                    </Button>
-                  </div>
+              {isLoading ? (
+                <div className="text-xs text-muted-foreground px-2">
+                  Loading chats...
                 </div>
-              ))}
-            </div>
-          </ScrollArea>
-
-          <div className="p-4 pb-2">
-            <h2 className="text-sm font-medium text-sidebar-foreground mb-2">Recent Chats</h2>
-          </div>
-
-          <ScrollArea className="flex-1 px-2">
-            <div className="space-y-2 p-2">
-              {recent.map((chat) => (
-                <div
-                  role="button"
-                  tabIndex={0}
-                  key={chat.id}
-                  onClick={() => onSelectChat(chat.id)}
-                  className={cn(
-                    "w-full p-3 rounded-lg text-left transition-colors group",
-                    "hover:bg-sidebar-item-hover",
-                    activeChatId === chat.id
-                      ? "bg-sidebar-item-active text-sidebar-accent-foreground"
-                      : "text-sidebar-foreground"
-                  )}
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <MessageSquare className="w-4 h-4 flex-shrink-0" />
-                      <h3 className="font-medium truncate text-sm">{chat.title}</h3>
-                    </div>
-                    <div className="flex items-center gap-1 ml-1">
-                      {chat.hasExternalSources && (
-                        <Globe className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-                      )}
-                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); onTogglePin(chat.id); }} title="Pin">
-                        ☆
+              ) : pinned.length === 0 ? (
+                <div className="text-xs text-muted-foreground px-2">
+                  No pinned chats
+                </div>
+              ) : null}
+              {!isLoading &&
+                pinned.map((chat) => (
+                  <div
+                    key={chat.id}
+                    className={cn(
+                      "w-full p-3 rounded-lg text-left transition-colors group",
+                      "hover:bg-sidebar-item-hover",
+                      activeChatId === chat.id
+                        ? "bg-sidebar-item-active text-sidebar-accent-foreground"
+                        : "text-sidebar-foreground"
+                    )}
+                    onClick={() => onSelectChat(chat.id)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <MessageSquare className="w-4 h-4 flex-shrink-0" />
+                        {!editingId || editingId !== chat.id ? (
+                          <h3 className="font-medium truncate text-sm">
+                            {chat.title}
+                          </h3>
+                        ) : (
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <input
+                              autoFocus
+                              value={editingTitle}
+                              onChange={(e) => setEditingTitle(e.target.value)}
+                              onClick={(e) => e.stopPropagation()}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  (async () => {
+                                    /* handled in save below */
+                                  })();
+                                }
+                                if (e.key === "Escape") {
+                                  setEditingId(null);
+                                  setEditingTitle("");
+                                }
+                              }}
+                              className="w-full text-sm rounded-md border bg-background px-2 py-1"
+                            />
+                          </div>
+                        )}
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 w-7 p-0"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onTogglePin(chat.id);
+                        }}
+                        title="Unpin"
+                      >
+                        ★
                       </Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
+                      {/* Edit button for pinned chats */}
+                      <div className="ml-1">
+                        {!editingId || editingId !== chat.id ? (
                           <Button
                             variant="ghost"
                             size="sm"
                             className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100"
-                            onClick={(e) => { e.stopPropagation(); }}
-                            title="Delete chat"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingId(chat.id);
+                              setEditingTitle(chat.title);
+                            }}
+                            title="Edit title"
                           >
-                            <Trash2 className="w-3 h-3" />
+                            <Edit2 className="w-3 h-3" />
                           </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Delete Chat</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This will permanently delete this chat and its messages. Are you sure?
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => onDeleteChat(chat.id)} className="bg-destructive hover:bg-destructive/90">
-                              Delete
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Clock className="w-3 h-3" />
-                      <span>Updated {chat.updatedAt.toLocaleDateString()}</span>
-                    </div>
-
-                    {chat.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {chat.tags.slice(0, 2).map((tag, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs px-2 py-0.5">
-                            <Hash className="w-2 h-2 mr-1" />
-                            {tag}
-                          </Badge>
-                        ))}
-                        {chat.tags.length > 2 && (
-                          <Badge variant="secondary" className="text-xs px-2 py-0.5">
-                            +{chat.tags.length - 2}
-                          </Badge>
+                        ) : (
+                          <div className="flex items-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0"
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                if (!editingTitle.trim()) return;
+                                setSavingId(chat.id);
+                                try {
+                                  // call backend API
+                                  const { updateSession } = await import(
+                                    "@/api/session"
+                                  );
+                                  await updateSession(chat.id, {
+                                    title: editingTitle.trim(),
+                                  });
+                                  // update local store
+                                  const updateChatSession =
+                                    useAppStore.getState().updateChatSession;
+                                  updateChatSession(chat.id, {
+                                    title: editingTitle.trim(),
+                                  });
+                                  setEditingId(null);
+                                  setEditingTitle("");
+                                } catch (err) {
+                                  console.error(
+                                    "Failed to update session title",
+                                    err
+                                  );
+                                } finally {
+                                  setSavingId((id) =>
+                                    id === chat.id ? null : id
+                                  );
+                                }
+                              }}
+                              title="Save"
+                              disabled={savingId === chat.id}
+                            >
+                              {savingId === chat.id ? (
+                                <Loader2 className="w-3 h-3 animate-spin" />
+                              ) : (
+                                <Check className="w-3 h-3" />
+                              )}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingId(null);
+                                setEditingTitle("");
+                              }}
+                              title="Cancel"
+                            >
+                              <X className="w-3 h-3" />
+                            </Button>
+                          </div>
                         )}
                       </div>
-                    )}
+                    </div>
                   </div>
+                ))}
+            </div>
+          </ScrollArea>
+
+          <div className="p-4 pb-2">
+            <h2 className="text-sm font-medium text-sidebar-foreground mb-2">
+              Recent Chats
+            </h2>
+          </div>
+
+          <ScrollArea className="flex-1 px-2">
+            <div className="space-y-2 p-2">
+              {isLoading ? (
+                <div className="text-xs text-muted-foreground px-2">
+                  Loading chats...
                 </div>
-              ))}
+              ) : recent.length === 0 && !isLoading ? (
+                <div className="text-xs text-muted-foreground px-2">
+                  No recent chats
+                </div>
+              ) : null}
+              {!isLoading &&
+                recent.map((chat) => (
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    key={chat.id}
+                    onClick={() => onSelectChat(chat.id)}
+                    className={cn(
+                      "w-full p-3 rounded-lg text-left transition-colors group",
+                      "hover:bg-sidebar-item-hover",
+                      activeChatId === chat.id
+                        ? "bg-sidebar-item-active text-sidebar-accent-foreground"
+                        : "text-sidebar-foreground"
+                    )}
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <MessageSquare className="w-4 h-4 flex-shrink-0" />
+                        {!editingId || editingId !== chat.id ? (
+                          <h3 className="font-medium truncate text-sm">
+                            {chat.title}
+                          </h3>
+                        ) : (
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <input
+                              autoFocus
+                              value={editingTitle}
+                              onChange={(e) => setEditingTitle(e.target.value)}
+                              onClick={(e) => e.stopPropagation()}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                }
+                                if (e.key === "Escape") {
+                                  setEditingId(null);
+                                  setEditingTitle("");
+                                }
+                              }}
+                              className="w-full text-sm rounded-md border bg-background px-2 py-1"
+                            />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1 ml-1">
+                        {chat.hasExternalSources && (
+                          <Globe className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 w-7 p-0"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onTogglePin(chat.id);
+                          }}
+                          title="Pin"
+                        >
+                          ☆
+                        </Button>
+                        {!editingId || editingId !== chat.id ? (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingId(chat.id);
+                              setEditingTitle(chat.title);
+                            }}
+                            title="Edit title"
+                          >
+                            <Edit2 className="w-3 h-3" />
+                          </Button>
+                        ) : (
+                          <div className="flex items-center gap-1 ml-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0"
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                if (!editingTitle.trim()) return;
+                                setSavingId(chat.id);
+                                try {
+                                  const { updateSession } = await import(
+                                    "@/api/session"
+                                  );
+                                  await updateSession(chat.id, {
+                                    title: editingTitle.trim(),
+                                  });
+                                  const updateChatSession =
+                                    useAppStore.getState().updateChatSession;
+                                  updateChatSession(chat.id, {
+                                    title: editingTitle.trim(),
+                                  });
+                                  setEditingId(null);
+                                  setEditingTitle("");
+                                } catch (err) {
+                                  console.error(
+                                    "Failed to update session title",
+                                    err
+                                  );
+                                } finally {
+                                  setSavingId((id) =>
+                                    id === chat.id ? null : id
+                                  );
+                                }
+                              }}
+                              title="Save"
+                              disabled={savingId === chat.id}
+                            >
+                              {savingId === chat.id ? (
+                                <Loader2 className="w-3 h-3 animate-spin" />
+                              ) : (
+                                <Check className="w-3 h-3" />
+                              )}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingId(null);
+                                setEditingTitle("");
+                              }}
+                              title="Cancel"
+                            >
+                              <X className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        )}
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                              }}
+                              title="Delete chat"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Chat</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will permanently delete this chat and its
+                                messages. Are you sure?
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={async () => {
+                                  // Prevent double clicks and indicate loading
+                                  setDeletingId(chat.id);
+                                  try {
+                                    await onDeleteChat(chat.id);
+                                  } catch (err) {
+                                    // Let parent handle errors; still clear loading state
+                                    console.error(
+                                      "Failed to delete chat:",
+                                      err
+                                    );
+                                  } finally {
+                                    setDeletingId((id) =>
+                                      id === chat.id ? null : id
+                                    );
+                                  }
+                                }}
+                                disabled={deletingId === chat.id}
+                                className="bg-destructive hover:bg-destructive/90"
+                              >
+                                {deletingId === chat.id
+                                  ? "Deleting..."
+                                  : "Delete"}
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Clock className="w-3 h-3" />
+                        <span>
+                          Updated {chat.updatedAt.toLocaleDateString()}
+                        </span>
+                      </div>
+
+                      {chat.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {chat.tags.slice(0, 2).map((tag, index) => (
+                            <Badge
+                              key={index}
+                              variant="secondary"
+                              className="text-xs px-2 py-0.5"
+                            >
+                              <Hash className="w-2 h-2 mr-1" />
+                              {tag}
+                            </Badge>
+                          ))}
+                          {chat.tags.length > 2 && (
+                            <Badge
+                              variant="secondary"
+                              className="text-xs px-2 py-0.5"
+                            >
+                              +{chat.tags.length - 2}
+                            </Badge>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
             </div>
           </ScrollArea>
         </div>
@@ -260,10 +576,12 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
 
       {/* Bottom Actions */}
       <div className="p-4 border-t border-sidebar-border">
-        <div className={cn(
-          "space-y-2",
-          isCollapsed ? "flex flex-col items-center" : ""
-        )}>
+        <div
+          className={cn(
+            "space-y-2",
+            isCollapsed ? "flex flex-col items-center" : ""
+          )}
+        >
           <Button
             variant="ghost"
             size={isCollapsed ? "sm" : "default"}
@@ -273,9 +591,15 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
               isCollapsed ? "w-8 h-8 p-0" : "w-full justify-start"
             )}
           >
-            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            {isDark ? (
+              <Sun className="w-4 h-4" />
+            ) : (
+              <Moon className="w-4 h-4" />
+            )}
             {!isCollapsed && (
-              <span className="ml-2">{isDark ? 'Light Mode' : 'Dark Mode'}</span>
+              <span className="ml-2">
+                {isDark ? "Light Mode" : "Dark Mode"}
+              </span>
             )}
           </Button>
 
@@ -289,9 +613,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
             )}
           >
             <SlidersHorizontal className="w-4 h-4" />
-            {!isCollapsed && (
-              <span className="ml-2">Assistant Panel</span>
-            )}
+            {!isCollapsed && <span className="ml-2">Assistant Panel</span>}
           </Button>
 
           <UserProfilePopover>
@@ -304,7 +626,9 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
               )}
             >
               <User className="w-4 h-4" />
-              {!isCollapsed && <span className="ml-2 truncate">{displayName}</span>}
+              {!isCollapsed && (
+                <span className="ml-2 truncate">{displayName}</span>
+              )}
             </Button>
           </UserProfilePopover>
         </div>

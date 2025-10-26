@@ -1,31 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { MessageSquare, Eye, EyeOff } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/use-toast';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { MessageSquare, Eye, EyeOff } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
-  const mode = searchParams.get('mode') || 'login';
-  const [isLogin, setIsLogin] = useState(mode === 'login');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
-  const [fullName, setFullName] = useState('');
+  const mode = searchParams.get("mode") || "login";
+  const [isLogin, setIsLogin] = useState(mode === "login");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [fullName, setFullName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   const { signIn, signUp, user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
-      navigate('/chat');
+      navigate("/chat");
     }
   }, [user, navigate]);
 
@@ -37,31 +43,32 @@ const Auth = () => {
       if (isLogin) {
         const { error } = await signIn(email, password);
         if (error) {
-          if (error.message === 'Invalid login credentials') {
+          if (error.message === "Invalid login credentials") {
             toast({
-              title: 'Invalid credentials',
-              description: 'Please check your email and password and try again.',
-              variant: 'destructive',
+              title: "Invalid credentials",
+              description:
+                "Please check your email and password and try again.",
+              variant: "destructive",
             });
           } else {
             toast({
-              title: 'Sign in failed',
+              title: "Sign in failed",
               description: error.message,
-              variant: 'destructive',
+              variant: "destructive",
             });
           }
         } else {
           toast({
-            title: 'Welcome back!',
-            description: 'Successfully signed in.',
+            title: "Welcome back!",
+            description: "Successfully signed in.",
           });
         }
       } else {
         if (!username || !fullName) {
           toast({
-            title: 'Missing information',
-            description: 'Please fill in all required fields.',
-            variant: 'destructive',
+            title: "Missing information",
+            description: "Please fill in all required fields.",
+            variant: "destructive",
           });
           setLoading(false);
           return;
@@ -69,31 +76,32 @@ const Auth = () => {
 
         const { error } = await signUp(email, password, username, fullName);
         if (error) {
-          if (error.message === 'User already registered') {
+          if (error.message === "User already registered") {
             toast({
-              title: 'Account exists',
-              description: 'An account with this email already exists. Please sign in instead.',
-              variant: 'destructive',
+              title: "Account exists",
+              description:
+                "An account with this email already exists. Please sign in instead.",
+              variant: "destructive",
             });
           } else {
             toast({
-              title: 'Sign up failed',
+              title: "Sign up failed",
               description: error.message,
-              variant: 'destructive',
+              variant: "destructive",
             });
           }
         } else {
           toast({
-            title: 'Account created!',
-            description: 'Please check your email to verify your account.',
+            title: "Account created!",
+            description: "Please check your email to verify your account.",
           });
         }
       }
     } catch (error) {
       toast({
-        title: 'Something went wrong',
-        description: 'Please try again later.',
-        variant: 'destructive',
+        title: "Something went wrong",
+        description: "Please try again later.",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -102,22 +110,16 @@ const Auth = () => {
 
   const toggleMode = () => {
     setIsLogin(!isLogin);
-    setEmail('');
-    setPassword('');
-    setUsername('');
-    setFullName('');
+    setEmail("");
+    setPassword("");
+    setUsername("");
+    setFullName("");
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4">
-      {/* Animated Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-primary-glow/20">
-        <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse"></div>
-          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-primary-glow/40 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse delay-1000"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-accent/50 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse delay-2000"></div>
-        </div>
-      </div>
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4 force-light">
+      {/* Animated but non-overlapping background for auth pages */}
+      <div className="background-gradient-animation" />
 
       {/* Auth Card */}
       <Card className="w-full max-w-md relative z-10 shadow-elegant">
@@ -127,16 +129,15 @@ const Auth = () => {
             <span className="text-2xl font-bold">GodotChat</span>
           </div>
           <CardTitle className="text-2xl">
-            {isLogin ? 'Welcome back' : 'Create account'}
+            {isLogin ? "Welcome back" : "Create account"}
           </CardTitle>
           <CardDescription>
-            {isLogin 
-              ? 'Sign in to your account to continue' 
-              : 'Sign up to start your AI chat experience'
-            }
+            {isLogin
+              ? "Sign in to your account to continue"
+              : "Sign up to start your AI chat experience"}
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
@@ -152,7 +153,7 @@ const Auth = () => {
                     required={!isLogin}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="username">Username</Label>
                   <Input
@@ -166,7 +167,7 @@ const Auth = () => {
                 </div>
               </>
             )}
-            
+
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -178,13 +179,13 @@ const Auth = () => {
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <div className="relative">
                 <Input
                   id="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -205,16 +206,12 @@ const Auth = () => {
                 </Button>
               </div>
             </div>
-            
-            <Button 
-              type="submit" 
-              className="w-full" 
-              disabled={loading}
-            >
-              {loading ? 'Loading...' : (isLogin ? 'Sign In' : 'Sign Up')}
+
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Loading..." : isLogin ? "Sign In" : "Sign Up"}
             </Button>
           </form>
-          
+
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
               {isLogin ? "Don't have an account?" : "Already have an account?"}
@@ -223,7 +220,7 @@ const Auth = () => {
                 className="p-0 ml-1 h-auto font-normal"
                 onClick={toggleMode}
               >
-                {isLogin ? 'Sign up' : 'Sign in'}
+                {isLogin ? "Sign up" : "Sign in"}
               </Button>
             </p>
           </div>

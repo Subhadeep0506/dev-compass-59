@@ -64,6 +64,16 @@ const initialState: AppState = {
       github: true,
       web: true,
     },
+    querySettings: {
+      model: 'codestral-latest',
+      temperature: 0.7,
+      topK: 5,
+      memoryService: 'astradb',
+      category: 'tutorials',
+      subCategory: 'tutorials',
+      redditUsername: '',
+      relevance: 'top',
+    },
   },
   appSettings: {
     theme: 'light',
@@ -84,21 +94,21 @@ const initialState: AppState = {
   chatSettingsOpen: false,
   externalDialogOpen: false,
   pendingQuery: '',
-  
+
   setUser: (user) => {
     useAppStore.setState({ user });
   },
-  
+
   setChatSessions: (sessions) => {
     useAppStore.setState({ chatSessions: sessions });
   },
-  
+
   addChatSession: (session) => {
     useAppStore.setState((state) => ({
       chatSessions: [session, ...state.chatSessions],
     }));
   },
-  
+
   updateChatSession: (id, updates) => {
     useAppStore.setState((state) => ({
       chatSessions: state.chatSessions.map((s) =>
@@ -106,7 +116,7 @@ const initialState: AppState = {
       ),
     }));
   },
-  
+
   deleteChatSession: (id) => {
     useAppStore.setState((state) => {
       const filtered = state.chatSessions.filter((s) => s.id !== id);
@@ -121,32 +131,34 @@ const initialState: AppState = {
       };
     });
   },
-  
+
   setActiveChatId: (id) => {
     useAppStore.setState((state) => {
+      console.log('Setting active chat ID in store:', id);
       const session = state.chatSessions.find((s) => s.id === id);
       return {
         activeChatId: id,
-        messages: session?.messages || [],
+        // Don't set messages here - let the API loading handle it
+        // messages: session?.messages || [],
       };
     });
   },
-  
+
   setMessages: (messages) => {
     useAppStore.setState({ messages });
   },
-  
+
   addMessage: (message) => {
     useAppStore.setState((state) => {
       const updatedMessages = [...state.messages, message];
       const updatedSessions = state.chatSessions.map((s) =>
         s.id === state.activeChatId
           ? {
-              ...s,
-              messages: updatedMessages,
-              updatedAt: new Date(),
-              title: s.messages.length === 0 ? message.content.slice(0, 60) : s.title,
-            }
+            ...s,
+            messages: updatedMessages,
+            updatedAt: new Date(),
+            title: s.messages.length === 0 ? message.content.slice(0, 60) : s.title,
+          }
           : s
       );
       return {
@@ -155,7 +167,7 @@ const initialState: AppState = {
       };
     });
   },
-  
+
   updateMessage: (id, updates) => {
     useAppStore.setState((state) => {
       const updatedMessages = state.messages.map((m) =>
@@ -172,7 +184,7 @@ const initialState: AppState = {
       };
     });
   },
-  
+
   deleteMessage: (id) => {
     useAppStore.setState((state) => {
       const updatedMessages = state.messages.filter((m) => m.id !== id);
@@ -187,17 +199,17 @@ const initialState: AppState = {
       };
     });
   },
-  
+
   setChatSettings: (settings) => {
     useAppStore.setState({ chatSettings: settings });
   },
-  
+
   setAppSettings: (settings) => {
     useAppStore.setState((state) => ({
       appSettings: { ...state.appSettings, ...settings },
     }));
   },
-  
+
   toggleTheme: () => {
     useAppStore.setState((state) => ({
       appSettings: {
@@ -206,7 +218,7 @@ const initialState: AppState = {
       },
     }));
   },
-  
+
   toggleSidebarCollapsed: () => {
     useAppStore.setState((state) => ({
       appSettings: {
@@ -215,7 +227,7 @@ const initialState: AppState = {
       },
     }));
   },
-  
+
   setRightPanelOpen: (open) => {
     useAppStore.setState((state) => ({
       appSettings: {
@@ -224,13 +236,13 @@ const initialState: AppState = {
       },
     }));
   },
-  
+
   setAssistantPanel: (panel) => {
     useAppStore.setState((state) => ({
       assistantPanel: { ...state.assistantPanel, ...panel },
     }));
   },
-  
+
   toggleAssistantPanel: () => {
     useAppStore.setState((state) => ({
       assistantPanel: {
@@ -239,23 +251,23 @@ const initialState: AppState = {
       },
     }));
   },
-  
+
   setIsLoading: (loading) => {
     useAppStore.setState({ isLoading: loading });
   },
-  
+
   setChatSettingsOpen: (open) => {
     useAppStore.setState({ chatSettingsOpen: open });
   },
-  
+
   setExternalDialogOpen: (open) => {
     useAppStore.setState({ externalDialogOpen: open });
   },
-  
+
   setPendingQuery: (query) => {
     useAppStore.setState({ pendingQuery: query });
   },
-  
+
   resetStore: () => {
     useAppStore.setState(initialState);
   },
@@ -268,6 +280,16 @@ export const useAppStore = create<AppState>()(
       name: 'app-store',
       storage: customStorage,
       version: 1,
+      partialize: (state) => ({
+        // Persist user, app settings, chat settings, and active chat ID
+        user: state.user,
+        activeChatId: state.activeChatId,
+        appSettings: state.appSettings,
+        chatSettings: state.chatSettings,
+        assistantPanel: state.assistantPanel,
+        // Don't persist chatSessions and messages - these will be loaded from API
+        // This prevents stale data and ensures we always have fresh data from the server
+      }),
       migrate: (persistedState: any, version: number) => {
         if (version === 0) {
           return initialState;

@@ -99,29 +99,29 @@
 
   .dark {
     /* Base Colors */
-    --background: 224 71% 4%;
+    --background: 222 11% 12%; /* lighter slate background */
     --foreground: 210 40% 98%;
 
-    /* Chat UI Colors */
-    --chat-bg: 224 71% 4%;
-    --chat-header: 222 84% 5%;
-    --chat-input: 222 84% 5%;
-  --chat-bubble-user: 207 65% 54%;
+    /* Chat UI Colors (slate-ish, slightly lighter than very-dark) */
+    --chat-bg: 220 8% 14%;
+    --chat-header: 220 8% 16%;
+    --chat-input: 220 8% 16%;
+    --chat-bubble-user: 207 65% 54%;
     --chat-bubble-user-foreground: 0 0% 100%;
-    --chat-bubble-bot: 222 84% 5%;
+    --chat-bubble-bot: 216 11% 18%;
     --chat-bubble-bot-foreground: 210 40% 98%;
 
     /* Sidebar Colors */
-    --sidebar-bg: 222 84% 5%;
-    --sidebar-item-hover: 215 28% 17%;
-  --sidebar-item-active: 207 65% 15%;
-    --sidebar-border: 215 28% 17%;
+    --sidebar-bg: 218 9% 14%;
+    --sidebar-item-hover: 218 9% 18%;
+    --sidebar-item-active: 208 14% 24%;
+    --sidebar-border: 218 9% 18%;
 
-    /* Component Colors */
-    --card: 222 84% 5%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 84% 5%;
-    --popover-foreground: 210 40% 98%;
+  /* Component Colors */
+  --card: 218 9% 16%;
+  --card-foreground: 210 40% 98%;
+  --popover: 218 9% 16%;
+  --popover-foreground: 210 40% 98%;
 
   /* Primary Brand */
   --primary: 207 65% 54%;
@@ -133,10 +133,10 @@
     --secondary-foreground: 210 40% 98%;
 
     /* Muted & Accent */
-    --muted: 215 28% 17%;
+    --muted: 220 7% 16%;
     --muted-foreground: 217 10% 65%;
-  --accent: 207 65% 15%;
-  --accent-foreground: 207 65% 80%;
+    --accent: 207 65% 15%;
+    --accent-foreground: 207 65% 80%;
 
     /* Status Colors */
     --destructive: 0 63% 31%;
@@ -147,11 +147,11 @@
     --warning-foreground: 0 0% 100%;
 
     /* Interactive Elements */
-    --border: 215 28% 17%;
-    --input: 215 28% 17%;
-  --ring: 207 65% 54%;
+    --border: 218 9% 18%;
+    --input: 218 9% 18%;
+    --ring: 207 65% 54%;
 
-    /* Design Tokens */
+  /* Design Tokens */
     --gradient-primary: linear-gradient(
       135deg,
       hsl(207 65% 54%),
@@ -162,17 +162,154 @@
       hsl(222 84% 5%),
       hsl(224 71% 4%)
     );
-  --shadow-elegant: 0 10px 30px -10px hsl(207 65% 54% / 0.2);
-    --shadow-chat: 0 2px 8px hsl(0 0% 0% / 0.3);
-    --sidebar-background: 240 5.9% 10%;
+    --shadow-elegant: 0 10px 30px -10px hsl(207 65% 54% / 0.2);
+    --shadow-chat: 0 2px 8px hsl(216 10% 20% / 0.32);
+    --sidebar-background: 218 9% 14%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-border: 218 9% 18%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+}
+
+/* Force light theme for specific pages (applied on container via class="force-light") */
+.force-light {
+  /* Base Colors */
+  --background: 0 0% 100%;
+  --foreground: 220 14% 8%;
+
+  /* Chat UI Colors */
+  --chat-bg: 0 0% 98%;
+  --chat-header: 0 0% 100%;
+  --chat-input: 0 0% 100%;
+  --chat-bubble-user: 207 65% 54%;
+  --chat-bubble-user-foreground: 0 0% 100%;
+  --chat-bubble-bot: 0 0% 100%;
+  --chat-bubble-bot-foreground: 220 14% 8%;
+
+  /* Sidebar Colors */
+  --sidebar-bg: 0 0% 100%;
+  --sidebar-item-hover: 0 0% 96%;
+  --sidebar-item-active: 207 65% 95%;
+  --sidebar-border: 220 13% 91%;
+
+  /* Component Colors */
+  --card: 0 0% 96%;
+  --code-block: #e6e6e6;
+  --card-foreground: 220 14% 8%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 14% 8%;
+
+  /* Primary Brand */
+  --primary: 207 65% 54%;
+  --primary-foreground: 0 0% 100%;
+  --primary-glow: 205 82% 67%;
+
+  /* Secondary */
+  --secondary: 0 0% 96%;
+  --secondary-foreground: 220 14% 8%;
+
+  /* Muted & Accent */
+  --muted: 0 0% 96%;
+  --muted-foreground: 220 8% 46%;
+  --accent: 207 65% 95%;
+  --accent-foreground: 207 65% 20%;
+
+  /* Status Colors */
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --success: 142 71% 45%;
+  --success-foreground: 0 0% 100%;
+  --warning: 38 92% 50%;
+  --warning-foreground: 0 0% 100%;
+
+  /* Interactive Elements */
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 207 65% 54%;
+
+  /* Design Tokens */
+  --radius: 0.5rem;
+  --gradient-primary: linear-gradient(
+    135deg,
+    hsl(207 65% 54%),
+    hsl(205 82% 67%)
+  );
+  --gradient-sidebar: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 98%));
+  --shadow-elegant: 0 10px 30px -10px hsl(207 65% 54% / 0.1);
+  --shadow-chat: 0 2px 8px hsl(220 14% 8% / 0.08);
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  --sidebar-background: 0 0% 98%;
+  --sidebar-foreground: 240 5.3% 26.1%;
+  --sidebar-primary: 240 5.9% 10%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 240 4.8% 95.9%;
+  --sidebar-accent-foreground: 240 5.9% 10%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+}
+
+/* Override commonly used utility tokens inside force-light to ensure light appearance */
+.force-light .bg-content1 {
+  background: hsl(var(--card)) !important;
+}
+.force-light .bg-content2 {
+  background: hsl(var(--popover)) !important;
+}
+.force-light .bg-content3 {
+  background: hsl(var(--code-block)) !important;
+}
+.force-light .border-divider {
+  border-color: hsl(var(--border)) !important;
+}
+.force-light .text-foreground-500 {
+  color: hsl(var(--muted-foreground)) !important;
+}
+.force-light .text-muted-foreground {
+  color: hsl(var(--muted-foreground)) !important;
+}
+.force-light .bg-primary-100 {
+  background: hsl(var(--primary) / 0.3) !important;
+}
+.force-light .bg-secondary-100 {
+  background: hsl(var(--secondary) / 0.3) !important;
+}
+
+/* Background utilities (dark:bg-xxx) -> inherit the non-dark background inside force-light */
+.force-light [class*="dark:bg-"] {
+  background: inherit !important;
+}
+
+/* Text utilities */
+.force-light [class*="dark:text-"] {
+  color: inherit !important;
+}
+
+/* Gradient stops (from-/via-/to-) */
+.force-light [class*="dark:from-"] {
+  /* let the element's normal classes define gradient stops */
+  background-image: inherit !important;
+}
+.force-light [class*="dark:via-"] {
+  background-image: inherit !important;
+}
+.force-light [class*="dark:to-"] {
+  background-image: inherit !important;
+}
+
+/* Border utilities */
+.force-light [class*="dark:border-"] {
+  border-color: inherit !important;
+}
+
+/* Misc: ensure prose-invert doesn't invert inside force-light */
+.force-light .dark\:prose-invert,
+.force-light .prose-invert {
+  color: inherit !important;
 }
 
 @layer base {
@@ -256,7 +393,7 @@
   }
 
   /* Override tailwind-typography default spacing inside message bubbles */
-  .message-content > :where(p,ul,ol,pre,blockquote,table) {
+  .message-content > :where(p,ul,ol,pre,blockquote,table,hr) {
     margin-top: 0 !important;
     margin-bottom: 0.5rem !important;
   }
@@ -368,6 +505,8 @@
   animation: gradient-shift 15s ease infinite;
   position: relative;
   overflow: hidden;
+  /* make sure animated background sits above subtle hero overlays but below main content (which uses z-10) */
+  z-index: 2;
 }
 
 .animated-bg::before {
@@ -385,6 +524,7 @@
   );
   filter: blur(60px);
   opacity: 0.7;
+  mix-blend-mode: screen;
   animation: blob-movement 20s ease-in-out infinite;
 }
 
@@ -403,16 +543,17 @@
   );
   filter: blur(60px);
   opacity: 0.7;
+  mix-blend-mode: screen;
   animation: blob-movement 25s ease-in-out infinite reverse;
 }
 
 .dark .animated-bg {
   background: linear-gradient(
     -45deg,
-    rgba(0, 111, 238, 0.1),
-    rgba(120, 40, 200, 0.1),
-    rgba(23, 201, 100, 0.1),
-    rgba(245, 165, 36, 0.1)
+    rgba(99, 102, 241, 0.16),
+    rgba(168, 85, 247, 0.12),
+    rgba(148, 163, 184, 0.10),
+    rgba(245, 165, 36, 0.10)
   );
   background-size: 400% 400%;
 }
@@ -420,15 +561,129 @@
 .dark .animated-bg::before {
   background: radial-gradient(
     circle,
-    rgba(0, 111, 238, 0.15) 0%,
-    rgba(120, 40, 200, 0.1) 100%
+    rgba(99, 102, 241, 0.28) 0%,
+    rgba(168, 85, 247, 0.18) 100%
   );
+  mix-blend-mode: screen;
+  opacity: 0.95;
 }
 
 .dark .animated-bg::after {
   background: radial-gradient(
     circle,
-    rgba(23, 201, 100, 0.15) 0%,
-    rgba(245, 165, 36, 0.1) 100%
+    rgba(148, 163, 184, 0.26) 0%,
+    rgba(245, 165, 36, 0.16) 100%
   );
+  mix-blend-mode: screen;
+  opacity: 0.9;
+}
+
+/* Background animation for auth pages (login/register) */
+.background-gradient-animation {
+  position: absolute;
+  inset: 0;
+  z-index: 0; /* sits behind the auth card which uses z-10 */
+  pointer-events: none;
+  /* stronger, more visible gradient */
+  background: linear-gradient(
+    -45deg,
+    rgba(99, 102, 241, 0.18),
+    rgba(168, 85, 247, 0.14),
+    rgba(148, 163, 184, 0.12)
+  );
+  background-size: 400% 400%;
+  animation: gradient-shift 22s ease infinite;
+  overflow: hidden;
+}
+
+.background-gradient-animation::before {
+  content: "";
+  position: absolute;
+  top: 8%;
+  left: 8%;
+  width: 36rem;
+  height: 36rem;
+  border-radius: 50%;
+  /* stronger blob color and less blur for better visibility */
+  background: radial-gradient(circle, rgba(99,102,241,0.42) 0%, rgba(168,85,247,0.28) 100%);
+  filter: blur(40px);
+  opacity: 0.95;
+  mix-blend-mode: screen;
+  animation: blob-movement 22s ease-in-out infinite;
+}
+
+.background-gradient-animation::after {
+  content: "";
+  position: absolute;
+  bottom: 6%;
+  right: 6%;
+  width: 30rem;
+  height: 30rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(148,163,184,0.38) 0%, rgba(245,165,36,0.22) 100%);
+  filter: blur(40px);
+  opacity: 0.92;
+  mix-blend-mode: screen;
+  animation: blob-movement 28s ease-in-out infinite reverse;
+}
+
+.dark .background-gradient-animation {
+  background: linear-gradient(
+    -45deg,
+    rgba(99, 102, 241, 0.22),
+    rgba(148, 163, 184, 0.14)
+  );
+}
+
+.dark .background-gradient-animation::before,
+.dark .background-gradient-animation::after {
+  opacity: 1;
+}
+
+/* Landing hero overlay tweaks so animated-bg shows through in dark mode */
+.landing-hero-overlay {
+  pointer-events: none;
+}
+
+.hero-gradient-overlay {
+  /* ensure default overlay sits under content but above animated-bg */
+  z-index: 0;
+}
+
+.hero-blob-1,
+.hero-blob-2 {
+  z-index: 0;
+}
+
+.dark .hero-gradient-overlay,
+.dark .hero-blob-1,
+.dark .hero-blob-2 {
+  /* reduce opacity and enable blending so animated blobs remain visible */
+  opacity: 0.55;
+  mix-blend-mode: multiply;
+}
+
+/* Custom styles for inline code in chat messages */
+@layer components {
+  .message-content .prose code {
+    display: inline !important;
+    padding: 0.125rem 0.25rem !important;
+    margin: 0 !important;
+    border-radius: 0.25rem !important;
+    background-color: hsl(var(--muted) / 0.6) !important;
+    color: hsl(var(--foreground)) !important;
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace !important;
+    font-size: 0.875rem !important;
+    white-space: nowrap !important;
+    vertical-align: baseline !important;
+    line-height: inherit !important;
+  }
+
+  /* Ensure code blocks remain as blocks */
+  .message-content .prose pre code {
+    display: block !important;
+    white-space: pre !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
 }
